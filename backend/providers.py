@@ -13,6 +13,7 @@ from decimal import Decimal, InvalidOperation
 
 import httpx
 import neatlogs
+from .telemetry import record_usage
 
 from .models import Buyer, Delivery, Invoice, Message, Payment, PurchaseOrder, Supplier
 
@@ -123,10 +124,7 @@ async def extract_records(text: str, source_id: str) -> dict | None:
                         raise ValueError("Model quota or budget unavailable; no automatic paid retry. Use manual extraction or contact the key provider.")
                     raise ValueError(f"Model extraction unavailable (HTTP {response.status_code}); use manual extraction.")
                 body = response.json()
-            usage = body.get("usage", {})
-            for key, label in (("prompt_tokens", "prompt"), ("completion_tokens", "completion"), ("total_tokens", "total")):
-                if isinstance(usage.get(key), int):
-                    span.set_attribute(f"neatlogs.llm.token_count.{label}", usage[key])
+            record_usage(span, request["model"], response, body)
         choice = body["choices"][0]
         if choice.get("finish_reason") != "stop" or choice["message"].get("refusal"):
             raise ValueError("Model extraction incomplete or refused; use manual extraction.")
@@ -166,10 +164,7 @@ async def plan_next_tool(summary: dict, allowed_tools: list[str]) -> dict | None
                 if response.status_code != 200:
                     raise ValueError(f"Model planner unavailable (HTTP {response.status_code}); run saved without paid retry.")
                 body = response.json()
-            for field, label in (("prompt_tokens", "prompt"), ("completion_tokens", "completion"), ("total_tokens", "total")):
-                value = body.get("usage", {}).get(field)
-                if isinstance(value, int):
-                    span.set_attribute(f"neatlogs.llm.token_count.{label}", value)
+            record_usage(span, request["model"], response, body)
             choice = body["choices"][0]
             if choice.get("finish_reason") != "stop" or choice["message"].get("refusal"):
                 raise ValueError("Planner response incomplete; run saved for review.")

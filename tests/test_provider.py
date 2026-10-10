@@ -2,6 +2,12 @@ import asyncio
 import pytest
 import httpx
 from backend import providers
+from backend import storage
+
+
+@pytest.fixture(autouse=True)
+def isolated_usage_ledger(tmp_path, monkeypatch):
+    monkeypatch.setattr(storage, "DATA_DIR", tmp_path)
 from backend.providers import extract_records, provider_available, validate_extraction
 
 
