@@ -75,3 +75,7 @@ Current integration verified: 71 backend tests pass; TypeScript/Vite production 
 ## cfo connection update — 11 October 2026
 
 Account OAuth and authenticated workspace discovery succeeded. Page/scenario creation calls were cancelled by the MCP tool surface; readback confirms no created page or blocks. Useful model/export remains pending. See [exact integration status](market/cfo-integration.md) and prepared model inputs.
+
+## Entire verification — 11 October 2026
+
+Doctor now confirms hook approval records PRESENT, replacing the earlier pending-approval status. Saved checkpoints on main:0. Remote checkpoint refs: none. Two pending activity records have empty IDs; they do not establish persistent commit linkage. See [verification report](ENTIRE-EVIDENCE.md).
