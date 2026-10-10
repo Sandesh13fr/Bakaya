@@ -85,6 +85,48 @@ def test_bad_money_validation_and_cross_origin_mutation(client):
     assert client.post("/api/cases/demo",headers={"origin":"https://evil.example"}).status_code==403
 
 
+def test_invoice_correction_updates_provenance_and_revokes_approval(client):
+    case=client.post("/api/cases/demo").json()
+    resolve(client,case)
+    client.post(f"/api/cases/{case['id']}/approve",json={"reviewer":"Me"})
+    corrected=client.patch(f"/api/cases/{case['id']}/review",json={"reviewer":"Me","invoice_updates":[{"invoice_id":"INV-002","source_id":"DOC-002","reason":"Confirmed written terms against original document","fields":{"written_term_days":45}}]})
+    assert corrected.status_code==200
+    invoice=next(i for i in corrected.json()["invoices"] if i["id"]=="INV-002")
+    assert invoice["due_date"]=="2026-06-17"
+    assert invoice["field_sources"]["written_term_days"]==["DOC-002"]
+    assert corrected.json()["approval"] is None
+    assert client.get(f"/api/cases/{case['id']}/export").status_code==409
+
+
+def test_invoice_correction_cannot_edit_ids_or_bad_dates(client):
+    case=client.post("/api/cases/demo").json()
+    base={"invoice_id":"INV-001","source_id":"DOC-001","reason":"Reviewer correction"}
+    assert client.patch(f"/api/cases/{case['id']}/review",json={"invoice_updates":[{**base,"fields":{"id":"OTHER"}}]}).status_code==422
+    assert client.patch(f"/api/cases/{case['id']}/review",json={"invoice_updates":[{**base,"fields":{"date":"invalid"}}]}).status_code==422
+    saved=client.get(f"/api/cases/{case['id']}").json()
+    assert saved["invoices"][0]["id"]=="INV-001" and saved["invoices"][0]["date"]=="2026-05-01"
+
+
+def test_unreadable_evidence_supersession_keeps_replacement_link(client):
+    case=client.post("/api/cases/demo").json()
+    uploaded=client.post(f"/api/cases/{case['id']}/upload",files=[("files",("scan.png",b"unreadable","image/png"))]).json()
+    scan=next(s for s in uploaded["sources"] if s["status"]=="ocr_unavailable")
+    reviewed=client.patch(f"/api/cases/{case['id']}/review",json={"source_reviews":[{"source_id":scan["id"],"replacement_source_id":"DOC-001","reason":"Readable delivery proof replaces unprocessed scan"}]}).json()
+    source=next(s for s in reviewed["sources"] if s["id"]==scan["id"])
+    assert source["status"]=="superseded" and source["replacement_source_id"]=="DOC-001"
+    assert not any(b.get("source_id")==scan["id"] for b in reviewed["blockers"])
+
+
+def test_export_approval_hash_catches_input_changed_without_revision(client):
+    case=client.post("/api/cases/demo").json()
+    resolve(client,case)
+    client.post(f"/api/cases/{case['id']}/approve",json={"reviewer":"Me"})
+    state=storage.get_case(case["id"])
+    state["input"]["invoices"][0]["amount"]="200000.00"
+    storage.save_case(state)
+    assert client.get(f"/api/cases/{case['id']}/export").status_code==409
+
+
 def test_dns_rebinding_host_and_opaque_origin_rejected(client):
     assert client.get("/api/cases", headers={"host": "evil.example"}).status_code == 400
     assert client.post("/api/cases/demo", headers={"origin": "null"}).status_code == 403

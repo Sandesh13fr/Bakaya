@@ -67,7 +67,7 @@ def packet_zip(view: dict, state: dict):
             "Document preparation only; not legal advice. No portal submission or buyer communication has occurred.\n")
     odr={"document_status":label,"portal_schema_verified":False,"notice":"Generic claim field worksheet; current ODR mandatory fields and format have not been verified.",
          "supplier":supplier,"buyer":buyer,"as_of":view["as_of"],"totals":totals,"invoices":view["invoices"],"rules_source":RULES_SOURCE,"convention":CONVENTION}
-    evidence=[{key:source.get(key) for key in ("id","file","kind","page","line","status","sha256","text")} for source in view["sources"]]
+    evidence=[{key:source.get(key) for key in ("id","file","kind","page","line","status","sha256","text","replacement_source_id")} for source in view["sources"]]
     output=io.BytesIO()
     with zipfile.ZipFile(output,"w",zipfile.ZIP_DEFLATED) as archive:
         archive.writestr("README.txt",label+"\n\nHuman approval permits this local download only. Nothing has been filed or sent.\n"+CONVENTION+"\nRate and invoice evidence references appear in each CSV line.\nPDF figures use rounded display amounts; sum interest_exact for exact totals.\n")
@@ -75,7 +75,7 @@ def packet_zip(view: dict, state: dict):
         archive.writestr("invoice-summary.csv",csv_bytes(view["invoices"],["id","number","amount","due_date","interest_start","outstanding","interest","total","source_refs","field_sources"]))
         archive.writestr("interest-schedule.csv",csv_bytes(view["schedule"],["invoice_id","start","end","days","principal","capitalized_interest","bank_rate","annual_rate","interest","interest_exact","rate_source","source_refs"]))
         archive.writestr("payment-reconciliation.csv",csv_bytes(view["matches"],["payment_id","invoice_id","amount","tds_amount","confidence","reason","source_refs"]))
-        archive.writestr("evidence-index.csv",csv_bytes(evidence,["id","file","kind","page","line","status","sha256","text"]))
+        archive.writestr("evidence-index.csv",csv_bytes(evidence,["id","file","kind","page","line","status","sha256","text","replacement_source_id"]))
         archive.writestr("evidence-index.json",json.dumps(evidence,indent=2))
         archive.writestr("demand-letter.txt",letter)
         archive.writestr("demand-letter.pdf",pdf_bytes("Bakaya demand letter draft",[letter]))

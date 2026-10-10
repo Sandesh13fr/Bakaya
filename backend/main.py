@@ -76,6 +76,12 @@ def invalidate(state):
     state["approval"]=None
 
 
+def current_approval(state):
+    approval=state.get("approval")
+    digest=hashlib.sha256(json.dumps(state["input"],sort_keys=True).encode()).hexdigest()
+    return bool(approval and approval["revision"]==state["revision"] and approval.get("input_sha256")==digest and not state["analysis"]["blockers"])
+
+
 def run_analysis(state,mode="fixed"):
     case=CaseInput.model_validate(state["input"])
     state["analysis"]=analyze(case,state["review"],mode)
@@ -191,12 +197,14 @@ async def upload(case_id:str,files:list[UploadFile]=File(...)):
         raise HTTPException(400,"At most30 files per upload")
     payload=state["input"]
     staged=[]
+    model_calls=0
     for file in files:
         data=await file.read(MAX_FILE_BYTES+1)
         try:
             sources,extracted,errors=ingest_bytes(file.filename or "upload",data)
             for source in sources:
-                if source.page and source.text and provider_available():
+                if source.page and source.text and provider_available() and model_calls<3:
+                    model_calls+=1
                     try:
                         proposed=await extract_records(source.text,source.id)
                         if proposed:
@@ -205,7 +213,8 @@ async def upload(case_id:str,files:list[UploadFile]=File(...)):
                             audit(state,"model_extraction",f"{source.file} page{source.page}: quoted typed proposals require review; no money computed by model.")
                     except ValueError as exc:
                         errors.append(str(exc))
-            if Path(file.filename or "").suffix.lower()==".txt" and provider_available():
+            if Path(file.filename or "").suffix.lower()==".txt" and provider_available() and model_calls<3:
+                model_calls+=1
                 proposed=await extract_records(sources[0].text,sources[0].id)
                 if proposed:
                     merge_records(payload,proposed)
@@ -252,6 +261,21 @@ def review(case_id:str,request:ReviewRequest):
     state=require_case(case_id)
     case=CaseInput.model_validate(state["input"])
     sources={s.id:s for s in case.sources}
+    for correction in request.invoice_updates:
+        index=next((n for n,inv in enumerate(case.invoices) if inv.id==correction.invoice_id),None)
+        source=sources.get(correction.source_id)
+        if index is None or not source or source.status not in {"parsed","reviewed","extracted_needs_review","unstructured_review"}:
+            raise HTTPException(422,"Invoice correction requires existing invoice and readable supporting source")
+        data=case.invoices[index].model_dump(mode="json")
+        data.update(correction.fields)
+        for field in correction.fields:
+            data["field_sources"][field]=[source.id]
+        data["source_refs"]=list(dict.fromkeys(data["source_refs"]+[source.id]))
+        try:
+            case.invoices[index]=type(case.invoices[index]).model_validate(data)
+        except ValidationError as exc:
+            raise HTTPException(422,"Invoice correction failed typed date/amount validation") from exc
+        audit(state,"invoice_correction",f"{request.reviewer}: corrected {correction.invoice_id} fields {', '.join(correction.fields)} using {source.id}; {correction.reason}")
     for resolution in request.resolutions:
         payment=next((p for p in case.payments if p.id==resolution.payment_id),None)
         if not payment or resolution.source_id not in sources:
@@ -273,6 +297,7 @@ def review(case_id:str,request:ReviewRequest):
             if not replacement or replacement.id==source.id or replacement.status not in {"parsed","reviewed"}:
                 raise HTTPException(422,"Unreadable source requires readable replacement evidence")
             source.status="superseded"
+            source.replacement_source_id=replacement.id
         elif source.status in {"unstructured_review","extracted_needs_review"}:
             source.status="reviewed"
         if decision.get("kind") in {"tds_certificate","remittance_note"}:
@@ -307,7 +332,7 @@ def approve(case_id:str,request:ApprovalRequest):
 @app.get("/api/cases/{case_id}/export")
 def export(case_id:str):
     state=require_case(case_id)
-    if not state["approval"] or state["approval"]["revision"]!=state["revision"] or state["analysis"]["blockers"]:
+    if not current_approval(state):
         raise HTTPException(409,"Human approval is required for this current revision")
     audit(state,"exported","Approved packet downloaded locally; no external submission.")
     storage.save_case(state)

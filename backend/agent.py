@@ -104,7 +104,6 @@ async def choose_with_model(state,request,recommended):
         return recommended
 
 
-@neatlogs.span(kind="TOOL",name="bounded-case-tool",capture_input=False,capture_output=False)
 async def execute_tool(state,tool,request):
     agent=state["agent"]
     flags=agent["flags"]
@@ -169,9 +168,9 @@ async def execute_tool(state,tool,request):
         agent["waiting_questions"]=[{"id":"human-approval","code":"approval","question":"Review figures and evidence, then explicitly approve this revision for local download."}]
         return "Evidence checks complete; waiting for explicit human approval. No packet leaves this local service."
     if tool=="build_local_packet":
-        if not state["approval"] or state["approval"]["revision"]!=state["revision"] or state["analysis"]["blockers"]:
+        from .main import current_approval,view
+        if not current_approval(state):
             raise ValueError("Current human approval required before packet build")
-        from .main import view
         content=packet_zip(view(state),state)
         name="approved-packet-"+str(state["revision"])+".zip"
         (storage.upload_dir(state["id"])/name).write_bytes(content)
@@ -188,21 +187,24 @@ async def advance(state,request:AgentRequest,fresh=False):
     if fresh or not state.get("agent"):
         state["agent"]=new_agent(state)
     agent=state["agent"]
-    if agent["input_revision"]!=state["revision"]:
+    revision_changed=agent["input_revision"]!=state["revision"]
+    if revision_changed:
         attempted=agent["flags"].get("extraction_attempted",[])
-        agent["flags"]={"extraction_attempted":attempted}
+        previous_flags=agent["flags"]
+        agent["flags"]={"extraction_attempted":attempted,**{key:previous_flags[key] for key in ("planner_unavailable","failure_injected") if key in previous_flags}}
         agent["input_revision"]=state["revision"]
         agent["packet"]=None
         record_step(state,"refresh_checkpoint","completed","Case revision changed after human review/upload; tools will recompute against current evidence.")
     # Repeated resume without a decision does not burn steps or create a loop.
-    if agent["status"]=="waiting_review" and state["analysis"]["blockers"] and agent["input_revision"]==state["revision"] and agent["flags"].get("ledger"):
+    if agent["status"]=="waiting_review" and state["analysis"]["blockers"] and not revision_changed:
         return state
     if agent["status"]=="waiting_approval" and not state["approval"] and agent["flags"].get("ledger"):
         return state
     agent["status"]="running"
     agent["waiting_questions"]=[]
     for _ in range(request.max_steps):
-        if len(agent["steps"])>=agent["max_total_steps"]:
+        slots=2 if request.allow_model_planning and provider_available() and not agent["flags"].get("planner_unavailable") else 1
+        if len(agent["steps"])+slots>agent["max_total_steps"]:
             agent["status"]="budget_exhausted"
             agent["next_tool"]=None
             break
@@ -221,7 +223,12 @@ async def advance(state,request:AgentRequest,fresh=False):
             break
         agent["attempts"][tool]=attempts+1
         try:
-            summary=await execute_tool(state,tool,request)
+            with neatlogs.trace(tool,kind="TOOL") as span:
+                span.set_attribute("neatlogs.tool.name",tool)
+                span.set_attribute("bakaya.invoice_count",len(state["input"]["invoices"]))
+                span.set_attribute("bakaya.source_count",len(state["input"]["sources"]))
+                summary=await execute_tool(state,tool,request)
+                span.set_attribute("bakaya.tool_status","completed")
             agent.pop("failed_tool",None)
             record_step(state,tool,"completed",summary)
         except Exception as exc:

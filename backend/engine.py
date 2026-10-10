@@ -245,6 +245,8 @@ def analyze(case: CaseInput, review: dict | None = None, mode: str = "fixed") ->
         provenance(invoice, invoice.id, ("amount", "date"))
         if invoice.date > case.as_of:
             block("future_invoice", f"{invoice.id}: invoice is after as-of date.", invoice_id=invoice.id)
+        if invoice.buyer and invoice.buyer.casefold().strip()!=case.buyer.name.casefold().strip():
+            block("buyer_mismatch", f"{invoice.id}: buyer identity differs from the single-buyer case. Confirm or separate the claim.", invoice_id=invoice.id)
         pos=[p for p in case.purchase_orders if p.invoice_id==invoice.id]
         deliveries=[d for d in case.deliveries if d.invoice_id==invoice.id]
         if len(pos)>1 or len(deliveries)>1:

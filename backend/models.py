@@ -23,6 +23,7 @@ class SourceRef(BaseModel):
     text: str = ""
     sha256: str = ""
     stored_name: str | None = None
+    replacement_source_id: str | None = None
 
 
 class Supplier(Record):
@@ -144,6 +145,21 @@ class Resolution(BaseModel):
     source_id: str
 
 
+class InvoiceCorrection(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    invoice_id: str
+    source_id: str
+    reason: str = Field(min_length=5)
+    fields: dict[str, str | int | None]
+
+    @model_validator(mode="after")
+    def editable_fields(self):
+        allowed={"number","date","amount","buyer","delivery_date","acceptance_date","contract_date","written_term_days","objection_date","objection_resolved_date"}
+        if not self.fields or not set(self.fields)<=allowed:
+            raise ValueError("Invoice correction may edit only documented invoice facts; IDs/provenance cannot be changed directly")
+        return self
+
+
 class ReviewRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     reviewer: str = Field(default="Local reviewer", min_length=1)
@@ -151,6 +167,7 @@ class ReviewRequest(BaseModel):
     buyer_confirmed: bool | None = None
     resolutions: list[Resolution] = Field(default_factory=list)
     source_reviews: list[dict[str, str]] = Field(default_factory=list)
+    invoice_updates: list[InvoiceCorrection] = Field(default_factory=list)
 
 
 class ApprovalRequest(BaseModel):
