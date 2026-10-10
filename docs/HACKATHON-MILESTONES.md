@@ -109,3 +109,7 @@ Account OAuth and authenticated workspace discovery succeeded. Page/scenario cre
 ## Entire verification — 11 October 2026
 
 Doctor now confirms hook approval records PRESENT, replacing the earlier pending-approval status. Saved checkpoints on main:0. Remote checkpoint refs: none. Two pending activity records have empty IDs; they do not establish persistent commit linkage. See [verification report](ENTIRE-EVIDENCE.md).
+
+## Entire checkpoint completed — 11 October 2026
+
+Checkpoint `01M4KRBT9GY4SCGC3WR3NXRGTR` is stored, linked to commit `0958d0e`, scanned for supplied/configured key values, and pushed to origin. Exact remote ref readback matches local. It stores session/subagent context and is marked logs-only; file attribution and rollback remain unverified. This supersedes earlier no-checkpoint status. See [Entire evidence](ENTIRE-EVIDENCE.md).

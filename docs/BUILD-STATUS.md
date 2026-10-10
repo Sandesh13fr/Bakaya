@@ -48,3 +48,7 @@ Actual Neatlogs application trace `45d523b11808755c75601c9114fc81b1` finalized s
 ## cfo connection update — 11 October 2026
 
 Account OAuth and authenticated workspace discovery succeeded. Page/scenario creation calls were cancelled by the MCP tool surface; readback confirms no created page or blocks. Useful model/export remains pending. See [exact integration status](market/cfo-integration.md) and prepared model inputs.
+
+## Entire checkpoint completed — 11 October 2026
+
+Checkpoint `01M4KRBT9GY4SCGC3WR3NXRGTR` is stored, linked to commit `0958d0e`, scanned for supplied/configured key values, and pushed to origin. Exact remote ref readback matches local. It stores session/subagent context and is marked logs-only; file attribution and rollback remain unverified. This supersedes earlier no-checkpoint status. See [Entire evidence](ENTIRE-EVIDENCE.md).
