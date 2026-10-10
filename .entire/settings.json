@@ -12,5 +12,6 @@
       "crustdata_key": "cd_[A-Za-z0-9_-]{20,}",
       "gateway_key": "sk-[A-Za-z0-9_-]{16,}"
     }
-  }
+  },
+  "commit_linking": "always"
 }
