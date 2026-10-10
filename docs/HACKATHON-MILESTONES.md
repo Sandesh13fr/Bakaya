@@ -101,3 +101,7 @@ The public package should include synthetic fixtures, reproducible validation in
 Current integration verified: 71 backend tests pass; TypeScript/Vite production build passes; browser source review, human approval and ZIP download pass on desktop/mobile with no page-level overflow or runtime errors. A+B workspace is implemented. Secondary text contrast was corrected and recaptured; fresh finish reviewer disposition: ship for the scored contrast fix (6.18:1 on white, above 5.3:1 on selected/totals surfaces). Separate quality-bar card was unavailable. Final video, Entire checkpoint, cfo.ai workflow, public evidence and authorized submission remain outstanding. GitHub stays private by user instruction.
 
 The 11 October workspace commit is `8cc81b4`, pushed privately. Its Entire prepare-commit hook stalled and was terminated; no new checkpoint is claimed. Documentation commits temporarily skip this stalled hook without changing its installed configuration.
+
+## cfo connection update — 11 October 2026
+
+Account OAuth and authenticated workspace discovery succeeded. Page/scenario creation calls were cancelled by the MCP tool surface; readback confirms no created page or blocks. Useful model/export remains pending. See [exact integration status](market/cfo-integration.md) and prepared model inputs.

@@ -17,7 +17,7 @@
 | OCR for scanned documents | Unreadable scans flagged for review | Provide readable originals or choose an OCR service and configure its credentials; integration still required |
 | neatlogs | Local audit is separate from sponsor tracing | Create account/project, obtain current SDK configuration and connect/test it; use redacted records |
 | Entire | No sponsor checkpoint created | Create account, install/configure supported CLI, connect repository before claiming checkpoints |
-| cfo.ai | Strategy documents only | Create account, check billing terms, enter measured inference/OCR/support/hosting costs and export plan |
+| cfo.ai | OAuth and workspace discovery verified; model write cancelled | Reload/reconnect MCP tools, complete and verify the prepared financial model; see market/cfo-integration.md |
 | Crustdata | Optional; not connected | Claim sponsor access if applicable, obtain key, configure and test buyer lookup; owner must confirm entity |
 | AWS | No deployment | Claim/check access, confirm credits and eligible services, configure EC2 and security; use a single instance if rules require it |
 

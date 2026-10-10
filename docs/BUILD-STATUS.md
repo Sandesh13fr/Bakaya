@@ -44,3 +44,7 @@ See [manual steps](MANUAL-STEPS.md), [input guide](INPUTS.md) and [market docume
 Ledger-first A and evidence-first B are implemented with self-hosted fonts, linked source facts, invoice corrections, bounded model planning and persistent agent checkpoints. The frontend production build and browser approval/export checks pass at desktop and 390px mobile width, with no page overflow or JavaScript errors. The contrast review identified secondary labels; their green text was darkened to #536747 and the same states recaptured.
 
 Actual Neatlogs application trace `45d523b11808755c75601c9114fc81b1` finalized successfully with workflow, model and inventory tool spans. One gateway planning call reported 430 tokens and USD 0.0007898; remaining shared allowance is unknown. See the judging evidence ledger for exact scope. This remains a trusted local demo, not a production deployment.
+
+## cfo connection update — 11 October 2026
+
+Account OAuth and authenticated workspace discovery succeeded. Page/scenario creation calls were cancelled by the MCP tool surface; readback confirms no created page or blocks. Useful model/export remains pending. See [exact integration status](market/cfo-integration.md) and prepared model inputs.
