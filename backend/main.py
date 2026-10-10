@@ -380,11 +380,17 @@ async def advance_agent(case_id,request,fresh):
     lock=LOCKS.setdefault(case_id,asyncio.Lock())
     async with lock:
         state=require_case(case_id)
-        try:
-            state=await advance(state,request,fresh)
-        except storage.ConcurrentCaseUpdate as exc:
-            raise HTTPException(409,str(exc)) from exc
-        return view(state)
+        with neatlogs.trace("prepare-invoice-case", kind="WORKFLOW") as span:
+            span.set_attribute("neatlogs.workflow.name", "prepare-invoice-case")
+            try:
+                state=await advance(state,request,fresh)
+                trace_id=span.get_span_context().trace_id
+                if trace_id:
+                    state["agent"]["trace_id"]=format(trace_id,"032x")
+                    storage.save_case(state,expected_revision=state["revision"])
+            except storage.ConcurrentCaseUpdate as exc:
+                raise HTTPException(409,str(exc)) from exc
+            return view(state)
 
 
 frontend=Path(__file__).resolve().parents[1]/"frontend"/"dist"
