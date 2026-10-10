@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-10-10T19:10:27.7705886Z",
+  "generatedAt": "2026-10-10T22:28:26.743339+00:00",
   "schemaVersion": 2,
   "title": "Design System: Bakaya",
   "components": [
     {
-      "css": ".ds-primary{font-family:DM Sans,sans-serif;font-size:11px;display:inline-flex;align-items:center;gap:7px;border:1px solid transparent;border-radius:6px;padding:11px 14px;min-height:39px;font-weight:500;background:var(--green,#246c54);color:#f7faf1;cursor:pointer;transition:background 160ms ease-out,color 160ms ease-out}.ds-primary:hover{background:#1c5944;filter:brightness(.97)}.ds-primary:focus-visible{outline:3px solid #43856a;outline-offset:3px} .ds-primary:disabled{opacity:.48;cursor:not-allowed}",
+      "css": ".ds-primary{font-family:DM Sans,sans-serif;font-size:13px;display:inline-flex;align-items:center;gap:7px;border:1px solid transparent;border-radius:6px;padding:11px 14px;min-height:44px;font-weight:500;background:var(--green,#246c54);color:#f7faf1;cursor:pointer;transition:background 160ms ease-out,color 160ms ease-out}.ds-primary:hover{background:#1c5944;filter:brightness(.97)}.ds-primary:focus-visible{outline:3px solid #43856a;outline-offset:3px} .ds-primary:disabled{opacity:.48;cursor:not-allowed}",
       "refersTo": "button-primary",
       "description": "Main preparation and approval actions.",
       "kind": "button",
@@ -12,7 +12,7 @@
       "html": "<button class=\"ds-primary\">Prepare claim</button>"
     },
     {
-      "css": ".ds-secondary{font-family:DM Sans,sans-serif;font-size:11px;border:1px solid #cad7c2;border-radius:6px;padding:11px 14px;min-height:39px;font-weight:500;background:#fdfefa;color:#41663a;cursor:pointer;transition:background 160ms ease-out,color 160ms ease-out}.ds-secondary:hover{background:#eff5e8;filter:brightness(.97)}.ds-secondary:focus-visible{outline:3px solid #43856a;outline-offset:3px}",
+      "css": ".ds-secondary{font-family:DM Sans,sans-serif;font-size:13px;border:1px solid #cad7c2;border-radius:6px;padding:11px 14px;min-height:44px;font-weight:500;background:#fdfefa;color:#41663a;cursor:pointer;transition:background 160ms ease-out,color 160ms ease-out}.ds-secondary:hover{background:#eff5e8;filter:brightness(.97)}.ds-secondary:focus-visible{outline:3px solid #43856a;outline-offset:3px}",
       "refersTo": "button-secondary",
       "description": "Supporting document and workspace actions.",
       "kind": "button",
@@ -20,7 +20,7 @@
       "html": "<button class=\"ds-secondary\">Add documents</button>"
     },
     {
-      "css": ".ds-field-label{font-family:DM Sans,sans-serif;font-size:11px;display:flex;flex-direction:column;gap:7px;color:#506f3c;font-weight:500}.ds-field{font-family:DM Sans,sans-serif;font-size:11px;border:1px solid #c9d7bc;border-radius:5px;background:#fff;padding:11px;color:#2d532c;caret-color:var(--green,#246c54)}.ds-field::placeholder{color:#69786c;opacity:1}.ds-field:focus{outline:2px solid #43856a;outline-offset:1px}",
+      "css": ".ds-field-label{font-family:DM Sans,sans-serif;font-size:12px;display:flex;flex-direction:column;gap:7px;color:#506f3c;font-weight:500}.ds-field{font-family:DM Sans,sans-serif;font-size:12px;border:1px solid #c9d7bc;border-radius:5px;background:#fff;padding:11px;color:#2d532c;caret-color:var(--green,#246c54)}.ds-field::placeholder{color:#69786c;opacity:1}.ds-field:focus{outline:2px solid #43856a;outline-offset:1px}",
       "refersTo": "field",
       "description": "Review and claim information fields.",
       "kind": "input",
@@ -36,7 +36,7 @@
       "html": "<nav class=\"ds-nav\"><button class=\"ds-nav-item\" aria-current=\"page\">Invoice ledger</button></nav>"
     },
     {
-      "css": ".ds-badge{display:inline-flex;align-items:center;justify-content:center;gap:4px;border-radius:4px;padding:4px 7px;font-family:DM Sans,sans-serif;font-size:9px;line-height:1.5;font-weight:500;white-space:nowrap;color:#5b7153;background:#edf2e7}",
+      "css": ".ds-badge{display:inline-flex;align-items:center;justify-content:center;gap:4px;border-radius:4px;padding:4px 7px;font-family:DM Sans,sans-serif;font-size:12px;line-height:1.5;font-weight:500;white-space:nowrap;color:#5b7153;background:#edf2e7}",
       "refersTo": "badge-neutral",
       "description": "Plain descriptive status.",
       "kind": "chip",
@@ -44,7 +44,7 @@
       "html": "<span class=\"ds-badge\">Synthetic records</span>"
     },
     {
-      "css": ".ds-panel{background:#fff;border:1px solid var(--border,#dce3d9);border-radius:var(--radius,12px);overflow:hidden;min-width:0;color:#23382f;font-family:DM Sans,sans-serif}.ds-panel-heading{padding:20px}.ds-panel-heading h2{margin:0;font-size:17px;font-weight:600;line-height:1.4}.ds-panel-heading p{margin:5px 0 0;font-size:11px;line-height:1.65;color:#536747}",
+      "css": ".ds-panel{background:#fff;border:1px solid var(--border,#dce3d9);border-radius:var(--radius,12px);overflow:hidden;min-width:0;color:#23382f;font-family:DM Sans,sans-serif}.ds-panel-heading{padding:20px}.ds-panel-heading h2{margin:0;font-size:17px;font-weight:600;line-height:1.4}.ds-panel-heading p{margin:5px 0 0;font-size:12px;line-height:1.65;color:#536747}",
       "refersTo": "panel",
       "description": "Bounded record details and financial workspace.",
       "kind": "card",
@@ -52,7 +52,7 @@
       "html": "<section class=\"ds-panel\"><header class=\"ds-panel-heading\"><h2>Selected invoice</h2><p>Follow the linked supporting records.</p></header></section>"
     },
     {
-      "css": ".ds-stage{background:#e6eae2;padding:21px}.ds-paper{background:#fff;padding:27px 24px;box-shadow:0 8px 21px #1d382715}.ds-paper h3{font-family:Lora,serif;font-size:18px;font-weight:500;line-height:1.5;color:#2c4d34;margin:0 0 23px;border-bottom:1px solid #bed0ac;padding-bottom:25px}.ds-line{display:flex;align-items:flex-start;gap:13px;font-family:DM Sans,sans-serif}.ds-line span{width:14px;color:#7c8e6e;font-size:9px;font-variant-numeric:tabular-nums;padding-top:3px}.ds-line p{margin:0;font-size:12px;line-height:1.9;color:#3a573a;white-space:pre-wrap}",
+      "css": ".ds-stage{background:#e6eae2;padding:21px}.ds-paper{background:#fff;padding:27px 24px;box-shadow:0 8px 21px #1d382715}.ds-paper h3{font-family:Lora,serif;font-size:18px;font-weight:500;line-height:1.5;color:#2c4d34;margin:0 0 23px;border-bottom:1px solid #bed0ac;padding-bottom:25px}.ds-line{display:flex;align-items:flex-start;gap:13px;font-family:DM Sans,sans-serif}.ds-line span{width:14px;color:#7c8e6e;font-size:12px;font-variant-numeric:tabular-nums;padding-top:3px}.ds-line p{margin:0;font-size:12px;line-height:1.9;color:#3a573a;white-space:pre-wrap}",
       "refersTo": "source-paper",
       "description": "Readable source excerpt with numbered lines.",
       "kind": "custom",
@@ -402,6 +402,11 @@
       {
         "name": "The Records Before Totals Rule",
         "body": "Keep the ledger and linked evidence ahead of aggregate figures in the reading order.",
+        "section": "layout"
+      },
+      {
+        "name": "Progressive disclosure",
+        "body": "Keep three primary routes; show agent settings, secondary routes and history on demand. Required review controls remain visible.",
         "section": "layout"
       }
     ],

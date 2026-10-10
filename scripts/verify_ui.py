@@ -25,6 +25,23 @@ def main():
             page.get_by_role("button", name="How Bakaya works", exact=False).first.click()
             page.get_by_role("button", name="Explore a synthetic case").click()
         page.get_by_text("Synthetic demo", exact=True).wait_for()
+        assert page.get_by_role("button", name="Interest schedule", exact=True).is_hidden()
+        page.get_by_text("More details", exact=True).click()
+        page.get_by_role("button", name="Interest schedule", exact=True).click()
+        page.get_by_role("button", name="Claim workspace", exact=True).click()
+        if page.get_by_role("button", name="Interest schedule", exact=True).is_visible():
+            page.get_by_text("More details", exact=True).click()
+        page.get_by_role("button", name="How Bakaya works", exact=False).first.click()
+        page.get_by_role("dialog").wait_for()
+        for _ in range(6):
+            page.keyboard.press("Tab")
+            assert page.evaluate("document.querySelector('[role=dialog]').contains(document.activeElement)"), "Dialog focus escaped"
+        page.keyboard.press("Escape")
+        page.get_by_role("dialog").wait_for(state="hidden")
+        assert page.evaluate("document.activeElement.textContent.includes('How Bakaya works')"), "Dialog opener focus was not restored"
+        page.set_viewport_size({"width": 768, "height": 1000})
+        assert not page.evaluate("document.documentElement.scrollWidth > innerWidth"), "Tablet overflow"
+        page.set_viewport_size({"width": 1440, "height": 1000})
         page.locator(".working-bar").wait_for(state="hidden")
         page.screenshot(path=str(OUTPUT / "desktop-case.png"), full_page=True)
         page.get_by_role("button", name="View source", exact=False).first.click()

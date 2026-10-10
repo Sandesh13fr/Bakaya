@@ -37,14 +37,14 @@ typography:
     fontWeight: 600
   body:
     fontFamily: "DM Sans, sans-serif"
-    fontSize: "12px"
+    fontSize: "14px"
     lineHeight: 1.65
   label:
     fontFamily: "DM Sans, sans-serif"
-    fontSize: "11px"
+    fontSize: "13px"
     fontWeight: 500
 rounded:
-  panel: "12px"
+  panel: "8px"
   button: "6px"
   field: "5px"
   badge: "4px"
@@ -193,3 +193,11 @@ No shipping raster assets were added in this design pass. QA screenshots are rev
 - Don't hide uncertainty behind a success treatment.
 - Don't add decorative raster imagery to the record workspace.
 
+
+### Decluttering refinement — 11 October 2026
+
+Three primary routes: Claim workspace, Evidence library, Review & export. Invoices/payments, interest and activity remain under More details. Model settings and diagnostics remain under Agent details; recent decisions are collapsed. Preserve every unresolved question, source link, required confirmation and approval gate.
+
+Secondary text has a12px floor, operational body is13–14px, and mobile controls target44px. Status labels use text with restrained fill. Preparation and new-claim actions are secondary to the review task on an existing claim. Radix Dialog owns help/create modal focus, Escape and explicit opener-focus restoration. Tablet preparation and case controls wrap rather than overflow.
+
+Verification: production build and browser approval/export path passed at desktop1440 and mobile390; tablet768 overflow check passed; secondary navigation, modal focus confinement, Escape and opener restoration passed. Fresh visual reviewer disposition ship for the bounded decluttering pass. Exact comp/card comparison and independent reviewer interaction testing were unavailable. No new imagery or microfrontend split was introduced.
