@@ -1,0 +1,20 @@
+{
+  "tool_use_id": "01a129f7-cc85-77e1-97f7-2a5e0e69f54a",
+  "agent_id": "01a129f7-cc85-77e1-97f7-2a5e0e69f54a",
+  "subagent_type": "default",
+  "files": [
+    "backend/enrichment.py",
+    "backend/main.py",
+    "frontend/src/App.tsx",
+    "tests/test_enrichment.py"
+  ],
+  "token_usage": {
+    "input_tokens": 41335,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 1295104,
+    "output_tokens": 6533,
+    "api_call_count": 18
+  },
+  "started_at": "2026-10-11T13:27:51.2445353+05:30",
+  "completed_at": "2026-10-11T13:34:19.0139774+05:30"
+}

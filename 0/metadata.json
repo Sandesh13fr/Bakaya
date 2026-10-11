@@ -1,0 +1,82 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4MZVGF5FCQZF2MHZ1FW5C07",
+  "session_id": "01a12590-dc17-7413-9dad-86cc358ad23f",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-11T08:04:25.4865328Z",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "save_step_count": 1,
+  "files_touched": [
+    ".github/workflows/validate.yml",
+    "backend/enrichment.py",
+    "backend/main.py",
+    "frontend/src/App.tsx",
+    "scripts/verify_ui.py",
+    "tests/test_enrichment.py"
+  ],
+  "agent": "Codex",
+  "model": "gpt-6.1-sol",
+  "turn_id": "21e63d91191a",
+  "compact_transcript_start": 0,
+  "token_usage": {
+    "input_tokens": 1179086,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 52289280,
+    "output_tokens": 102077,
+    "api_call_count": 466,
+    "subagent_tokens_complete": false
+  },
+  "session_metrics": {
+    "turn_count": 11
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-11T08:04:25.1317136Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 452,
+    "human_modified": 353,
+    "human_removed": 0,
+    "total_committed": 452,
+    "total_lines_changed": 805,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 791,
+      "user_lines_removed": 655,
+      "agent_lines_added": 200,
+      "agent_lines_removed": 200,
+      "user_added_per_file": {
+        ".github/workflows/validate.yml": 24,
+        "README.md": 4,
+        "backend/enrichment.py": 95,
+        "backend/main.py": 11,
+        "docs/BUILD-STATUS.md": 26,
+        "docs/HACKATHON-MILESTONES.md": 20,
+        "docs/JUDGING-EVIDENCE.md": 36,
+        "docs/MANUAL-STEPS.md": 27,
+        "docs/RELEASE-PACKAGE.md": 62,
+        "docs/market/cfo-integration.md": 21,
+        "docs/market/crustdata-integration.md": 19,
+        "frontend/src/App.tsx": 269,
+        "scripts/verify_ui.py": 104,
+        "tests/test_enrichment.py": 73
+      },
+      "user_removed_per_file": {
+        "README.md": 4,
+        "backend/main.py": 1,
+        "docs/BUILD-STATUS.md": 42,
+        "docs/HACKATHON-MILESTONES.md": 115,
+        "docs/JUDGING-EVIDENCE.md": 85,
+        "docs/MANUAL-STEPS.md": 29,
+        "docs/market/cfo-integration.md": 19,
+        "docs/market/crustdata-integration.md": 11,
+        "frontend/src/App.tsx": 266,
+        "scripts/verify_ui.py": 83
+      }
+    }
+  ]
+}
