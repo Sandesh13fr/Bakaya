@@ -1,0 +1,17 @@
+{
+  "tool_use_id": "01a12a04-ae41-7680-9940-3a02906858bd",
+  "agent_id": "01a12a04-ae41-7680-9940-3a02906858bd",
+  "subagent_type": "default",
+  "files": [
+    "docs/market/cfo-integration.md"
+  ],
+  "token_usage": {
+    "input_tokens": 64721,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 2372224,
+    "output_tokens": 5006,
+    "api_call_count": 28
+  },
+  "started_at": "2026-10-11T13:41:55.54546+05:30",
+  "completed_at": "2026-10-11T13:54:37.592176+05:30"
+}

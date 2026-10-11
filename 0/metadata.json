@@ -1,0 +1,85 @@
+{
+  "cli_version": "0.11.4",
+  "checkpoint_id": "01M4N10PBRA6PG0XXE0Y3VDRMC",
+  "session_id": "01a12590-dc17-7413-9dad-86cc358ad23f",
+  "strategy": "manual-commit",
+  "created_at": "2026-10-11T08:24:59.2982674Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "save_step_count": 1,
+  "files_touched": [
+    "frontend/src/App.tsx",
+    "scripts/verify_auth_ui.py"
+  ],
+  "agent": "Codex",
+  "model": "gpt-6.1-sol",
+  "turn_id": "0f4e6df13348",
+  "compact_transcript_start": 0,
+  "token_usage": {
+    "input_tokens": 1363449,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 60423168,
+    "output_tokens": 120917,
+    "api_call_count": 533,
+    "subagent_tokens_complete": false
+  },
+  "session_metrics": {
+    "turn_count": 12
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-10-11T08:24:58.4913506Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 536,
+    "human_modified": 769,
+    "human_removed": 0,
+    "total_committed": 536,
+    "total_lines_changed": 1320,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 1678,
+      "user_lines_removed": 776,
+      "agent_lines_added": 23,
+      "agent_lines_removed": 23,
+      "user_added_per_file": {
+        ".dockerignore": 7,
+        ".env.example": 14,
+        ".gitignore": 3,
+        "Dockerfile": 12,
+        "backend/auth.py": 122,
+        "backend/ingest.py": 57,
+        "backend/main.py": 484,
+        "backend/storage.py": 72,
+        "deploy/Caddyfile": 10,
+        "deploy/backup.sh": 12,
+        "deploy/bakaya-backup.service": 8,
+        "deploy/bakaya-backup.timer": 9,
+        "deploy/compose.yaml": 43,
+        "deploy/production.env.example": 10,
+        "docs/PRODUCTION.md": 64,
+        "docs/market/cfo-integration.md": 12,
+        "frontend/src/App.tsx": 298,
+        "frontend/src/styles.css": 22,
+        "requirements.txt": 3,
+        "scripts/backup.py": 109,
+        "scripts/verify_auth_ui.py": 75,
+        "tests/test_auth.py": 108,
+        "tests/test_backup.py": 79,
+        "tests/test_ocr.py": 45
+      },
+      "user_removed_per_file": {
+        ".dockerignore": 4,
+        ".env.example": 9,
+        "Dockerfile": 9,
+        "backend/main.py": 417,
+        "backend/storage.py": 48,
+        "frontend/src/App.tsx": 269,
+        "frontend/src/styles.css": 20
+      }
+    }
+  ]
+}
