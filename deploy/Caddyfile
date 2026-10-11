@@ -1,5 +1,7 @@
 {$BAKAYA_DOMAIN} {
-    request_body { max_size 16MB }
+    request_body {
+        max_size 16MB
+    }
     header {
         Strict-Transport-Security "max-age=31536000"
         X-Content-Type-Options nosniff

@@ -13,7 +13,7 @@ Bakaya is a working **trusted local receivables-preparation prototype**, not a d
 
 ## Recorded verification
 
-Latest pre-release snapshot: **79 backend tests freshly pass on 11 October**, frontend build passes; desktop/mobile allocation → confirmation → approval → ZIP download and tablet overflow checked, with no observed runtime errors. Export PDFs were visually inspected in earlier validation. Revalidate final changes; these are recorded snapshots.
+Latest pre-release snapshot: **94 backend tests freshly pass on 11 October**, frontend build passes; desktop/mobile allocation → confirmation → approval → ZIP download and tablet overflow checked, with no observed runtime errors. Export PDFs were visually inspected in earlier validation. Revalidate final changes; these are recorded snapshots.
 
 Eight new Crustdata tests are included. Consent and cached buyer lookup passed browser checks at 1440/768/390 widths; the cached call consumed zero new credits. The local ledger shows 4 consumed / 4 reserved of the 500-credit ceiling. GitHub push/PR test-and-build validation has been added; remote CI passed for release commit `e0ab49f` (GitHub run 38123570935).
 
@@ -27,13 +27,20 @@ Neatlogs application trace `45d523b11808755c75601c9114fc81b1`: successful workfl
 
 | Area | Current truth / next action |
 | --- | --- |
-| cfo.ai | Authenticated; model/export pending verification. [Current integration status](market/cfo-integration.md). |
+| cfo.ai | Model created, values/formulas read back, browser opened and actual spreadsheet export verified. [Current integration status](market/cfo-integration.md). |
 | Crustdata | Authenticated; optional buyer enrichment implemented and browser-verified under the 500-credit ceiling. [Current integration status](market/crustdata-integration.md). |
 | Public evidence | Repository PUBLIC verified; final guest-link checks, progress post, narrated video and submission pending. |
-| Docker / AWS | Docker supplied but daemon unavailable at previous check; AWS STS identity verified only. No deployment. |
-| Real documents | OCR, messy-document validation and multi-invoice browser allocation editing remain incomplete. |
+| Docker / AWS | Docker image built. Dedicated encrypted AWS launch immediately terminated with InvalidKMSKey.InvalidState; provider action required. |
+| Real documents | Clean synthetic image/PDF OCR verified; difficult public receipt recovered 0/5 expected monetary amounts. Customer/professional validation pending. |
 | Legal / rates / portal | Rate-history fetch/cache, actual portal schema/fees and qualified eligibility/interest review pending. |
-| Production | Authentication/roles, tenant isolation, HTTPS, limits, retention/deletion, backups/restore, monitoring, malware controls and consent policy required. |
+| Production | Authentication/roles, tenant isolation, CSRF, throttling, encrypted backup/restore implemented and tested. Deployed backend, off-host backups, retention/deletion, monitoring, malware controls, policy and independent review remain pending. |
 | Market | No CA/customer interviews or paid pilots; pricing and demand are hypotheses. |
 
 See [judging evidence](JUDGING-EVIDENCE.md), [release package](RELEASE-PACKAGE.md) and [manual steps](MANUAL-STEPS.md). No completion percentage is a measured production-readiness score.
+
+
+## Live synthetic deployment — 11 October 2026
+
+Frontend: https://bakayaai-sandesh.vercel.app. AWS backend: https://3-93-34-52.sslip.io. Certificate validation, reviewer login, secure cookie, authenticated cases, logout and session revocation passed. The dedicated t3.small uses 16 GB unencrypted gp3 under explicit owner approval; synthetic data only. Daily encrypted backups are active; one downloaded off-host archive restored successfully. Automated off-host transfer, professional sign-off and sensitive-document production readiness remain pending. Stop the instance after the event; stop/start changes its public IP and requires updating the backend hostname and frontend rewrite.
+
+Login details are in the ignored local artifacts/deploy/operator-access.txt; never publish that file. Live browser inspection was unavailable, so deployed UI visual QA remains pending.

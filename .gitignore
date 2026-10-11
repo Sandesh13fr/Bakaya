@@ -13,3 +13,5 @@ artifacts/
 deploy/production.env
 deploy/data/
 deploy/backups/
+
+.vercel

@@ -59,7 +59,7 @@ npm.cmd run build
 
 Refer to the evaluation outputs for measured synthetic performance. Fixture performance is not production accuracy, and a deliberately simplified baseline is not evidence of a historical deployed failure.
 
-Recorded verification: 79 Python tests; frontend build; desktop/mobile evidence review, human approval and ZIP download; tablet overflow check; sample CSV ingestion and earlier visual PDF inspection. Live synthetic model extraction/planning and separate injected local recovery passed. The 20-case synthetic benchmark scored 70% for a deliberate baseline and 100% for the evidence-aware matcher under disclosed conventions. This is not production accuracy. OCR and live RBI rate-fetch recovery remain unverified. Revalidate new changes before release.
+Recorded verification: 94 Python tests; frontend build; desktop/mobile evidence review, human approval and ZIP download; tablet overflow check; sample CSV ingestion and earlier visual PDF inspection. Live synthetic model extraction/planning and separate injected local recovery passed. The 20-case synthetic benchmark scored 70% for a deliberate baseline and 100% for the evidence-aware matcher under disclosed conventions. This is not production accuracy. Local image/scanned-PDF OCR now passes clean synthetic checks; a difficult public receipt failed 0/5 expected monetary fields and remains in review. Live RBI rate fetching and professional validation remain unverified.
 
 ## Deployment
 
@@ -70,8 +70,13 @@ docker build -t bakaya .
 docker run --rm -p 127.0.0.1:8000:8000 -v bakaya-data:/app/data bakaya
 ```
 
-Public use additionally requires authentication, tenant isolation, HTTPS, rate limits, retention controls, backups and a privacy policy. This is a local prototype, not a production financial or legal service.
+Authentication, roles, tenant-scoped storage, authenticated reviewer attribution, CSRF, login throttling, encrypted backups and isolated restores are implemented. Production requires server-provisioned accounts and HTTPS. Retention/deletion, monitoring, malware controls, independent security review and a privacy policy still need completion before sensitive customer use.
 
-The Docker configuration is supplied but was not run: the local Docker daemon was unavailable. Set `BAKAYA_ALLOWED_HOSTS` to an explicit comma-separated list of deployment hostnames when using a trusted reverse proxy; local host validation is enabled by default.
+The Docker image built successfully; runtime verification is recorded in the production guide. Set `BAKAYA_ALLOWED_HOSTS` to an explicit comma-separated list of deployment hostnames when using a trusted reverse proxy; local host validation is enabled by default.
 
 Original supplied documents are preserved in `docs/original-prd.md` and `docs/original-message.txt`.
+
+The Vercel frontend is configured for https://bakayaai-sandesh.vercel.app. AWS backend launch failed on the provider's EBS/KMS encryption policy; the public frontend returns a clear HTTP503 service-unavailable state until that is resolved. It does not publish the local demo data. See [production setup and evidence](docs/PRODUCTION.md). The [cfo model](docs/market/cfo-integration.md) was created, read back and exported successfully.
+
+
+[Open the authenticated synthetic demo](https://bakayaai-sandesh.vercel.app). See [current deployment limits](docs/PRODUCTION.md#live-synthetic-deployment--11-october-2026) and [AWS usage rules](docs/AWS-USAGE.md).
