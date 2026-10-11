@@ -1,53 +1,30 @@
-# Neatlogs tracing
+# Neatlogs tracing — 11 October 2026
 
-Project: `24eef2dd-58aa-4b22-b549-9fc33c68b740` (selected by the supplied project key).
+The project key is loaded from the ignored root `.env`; no key is included in source or frontend configuration. Initialization runs in FastAPI lifespan; shutdown drains the SDK. Python performs model calls, so there is no frontend model instrumentation.
 
-The key is in the ignored root `.env`, loaded by the existing backend configuration.
-No key is included in source or frontend configuration. Restart the backend manually
-to load this integration; setup deliberately did not run or restart the app.
+## Complete lifecycle and paired evidence
 
-Only the Python backend calls a model. The upload HTTP entry point has an independent
-`invoice-document-extraction` workflow root per request. Its custom OpenAI HTTP call
-has one manual LLM span recording model, timing, actual returned token counts and
-errors, followed by quoted-record validation. No OpenAI SDK/framework is used, so
-provider wrapping or framework auto-instrumentation would not capture this call.
-The transport, timeout, extraction rules and returned data are unchanged.
+[Controlled replay report](evidence/PAIRED-AGENT-REPLAY.md) · [Public sanitized trace trees](evidence/paired-agent-replay.json)
 
-Initialization runs once in FastAPI lifespan; shutdown drains the SDK on server exit.
-Health, CRUD and the frontend are not instrumented. Traces omit source documents,
-prompts, model output and financial records. Error messages and stack traces are
-redacted before export. No detections, alerts or evaluations were configured.
+Actual revisions 233acc9 and 6985522 were replayed against the same synthetic case in isolated data directories. Each trace has 27 spans under one lifecycle root: inventory, ledger analysis, reconciliation, review pause at revision 1, scripted reviewer correction, approval pause at revision 2, explicit scripted approval, resumed packet generation and verified ZIP export. A separate labeled subtree tests an injected local failure and retry without repeating inventory.
 
-Installed Neatlogs 1.4.26 from the current PyPI release; dependencies are locked.
-The network-free SDK Doctor v2 check passed. Dashboard delivery and actual model
-tracing have not been verified by running the application.
+- Before trace: `adede6146ac02b223da79587c5c46242`
+- After trace: `3af784ca1b8dd9c7bcc69bb7d83fd1e7`
 
-For a model trace, configure `OPENAI_API_KEY` and `BAKAYA_ENABLE_LLM=true` locally,
-restart the backend, then upload a text document or readable PDF through the normal
-UI. Model-disabled or CSV-only uploads have no model call or token usage to record.
-Check the supplied project in Neatlogs for the extraction workflow.
+Both exact traces returned successful authenticated readback. Every span resolves to the lifecycle root. The comparison demonstrates redundant physical packet writes **1 → 0**, with identical principal/interest/claim totals, ten checkpoints and valid exports. It does not measure speed, cloud savings or production accuracy. These are rules-driven replays with zero model calls/tokens; zero model inference cost does not mean zero total delivery cost.
 
-Reference: https://docs.neatlogs.com/sdk/python
+These traces use the evidence harness, not an assertion that every historical or deployed run has a continuous root across requests. Named spans preserve state milestones; normalized Neatlogs readback drops custom `bakaya.*` attributes. Local results retain the run IDs and revision checkpoints. The public snapshot excludes prompts, output contents, documents and project/account identifiers. Dashboard guest sharing has not been verified; the public snapshot is the account-free evidence fallback.
 
-## Configured gateway and budget
-The local configuration now selects `https://litellm.vision.aivar.app/v1` with
-`claude-haiku`, using the ignored `LITELLM_API_KEY`. The authorized total model
-budget is USD 15. This is not a hard enforced application cap: the gateway owner
-must set a USD 15 maximum budget on this key. Exact alias pricing and structured
-JSON-schema compatibility remain unverified. No paid call or app restart was made.
+## Separate live model evidence
 
-## Live verification after implementation approval
-On 10 October 2026, a minimal structured-output gateway request returned HTTP 200
-using `claude-haiku` (166 total tokens), and a synthetic buyer extraction passed
-quoted-field validation through the application provider. These were real model
-calls. No private records were used. Exact dollar spend was not returned.
+Application trace `45d523b11808755c75601c9114fc81b1` verifies one actual claude-haiku planning/inventory step. Its call returned 358 prompt + 72 completion tokens and gateway-reported USD0.0007898. This is one call, not packet cost or account spend. Diagnostic Doctor trace `9f12d6ec853a4d4ec8b43b8da7c4fb57` is separate. A synthetic structured extraction also returned HTTP200 and 166 tokens; no private records were used.
 
-The authenticated Neatlogs Doctor probe passed, including finalized trace readback,
-valid parents and numeric usage. Probe trace: `9f12d6ec853a4d4ec8b43b8da7c4fb57`.
-This verifies the diagnostic trace; the synthetic application extraction emitted
-its own spans but was not separately read back from the dashboard.
+Upload extraction and agent run/resume requests have individual roots. Manual model spans record timing, actual returned tokens and available gateway cost; tool spans record execution. Health, ordinary CRUD and the frontend are not instrumented. Error messages/stack traces are redacted, and document/prompt/response contents are omitted intentionally. No detections, alerts or automatic evaluations are configured.
 
-The user confirmed the provider enforces USD 15 per key over 30 days, shared by
-all teammates, and stops requests when exhausted. Application extraction limits
-output to 4096 tokens; planning limits output to 256 and never retries a paid call
-automatically. HTTP 402/429 returns a quota/budget message requiring manual action.
+## Budget and reproduction
+
+The configured OpenAI-compatible gateway is `https://litellm.vision.aivar.app/v1`, using `claude-haiku` and an ignored key. The provider enforces the owner-confirmed shared USD15/key/30-day budget; remaining balance is unknown. Production public reviewers cannot initiate paid model or buyer-enrichment calls. Planning output is bounded to 256 tokens, extraction to 4096; paid calls never retry automatically. HTTP402/429 requires manual quota action.
+
+Use the [replay report's isolated reproduction instructions](evidence/PAIRED-AGENT-REPLAY.md). The harness refuses existing data directories and paid-provider configuration. Supply only Neatlogs credentials. Never replay into live data or publish its key.
+
+SDK reference: https://docs.neatlogs.com/sdk/python

@@ -10,7 +10,7 @@ Bakaya helps Indian micro and small suppliers prepare delayed-payment documentat
 
 *Captured local synthetic workspace. Fictional records and provisional totals illustrate the workflow; this is not a real claim or a current production screenshot.*
 
-[Watch the recorded local lifecycle](docs/assets/agent-lifecycle.webm) · [Inspect its evidence](docs/evidence/agent-lifecycle.json)
+[Watch the recorded local lifecycle](docs/assets/agent-lifecycle.webm) · [Inspect its evidence](docs/evidence/agent-lifecycle.json) · [Full Neatlogs lifecycle and paired replays](docs/evidence/PAIRED-AGENT-REPLAY.md)
 
 The recording follows one synthetic goal and run ID through ten checkpoints: reviewer pause, scripted human corrections (revision 1→2), approval pause, packet completion and ZIP download. It uses zero paid calls. It is a deterministic local workflow, separate from the live model and injected-failure tests; it is not a Neatlogs trace or the final narrated three-minute presentation.
 
@@ -38,7 +38,7 @@ flowchart LR
 | --- | --- |
 | Application | 99 Python tests passed on 11 October; frontend build; local desktop/mobile approval and ZIP export; tablet overflow checks. See dated [evidence](docs/JUDGING-EVIDENCE.md). |
 | Agent | Live synthetic extraction/planning and separate injected local recovery passed. The 20-fixture comparison is a deliberately flawed baseline (14/20) against the corrected matcher (20/20), not production accuracy. |
-| Neatlogs | Actual application trace readback verifies one model/inventory step, not every historical run. |
+| Neatlogs | Two controlled full-lifecycle traces each contain 27 verified spans, review/approval pauses, export and simulated recovery. Actual revisions show redundant packet writes 1→0 with identical totals. Zero model calls in this comparison; the earlier model trace is separate. |
 | Entire | Saved/pushed checkpoints and linked-file attribution verified. Git-assisted rollback passed in an isolated clone; native session resume did not restore code. |
 | cfo.ai | Editable pricing, delivery-cost, monthly revenue and conditional runway model read back with zero formula errors. Owner-provided cash ₹30,000 and fixed costs ₹20,000/month give 1.5 months runway at zero assumed sales; illustrative stress demand gives 2.83 months. Read-only judge sharing enabled; public CSV fallback available. [Model status](docs/market/cfo-integration.md). |
 | Crustdata | Administrator-only consented, cached buyer enrichment; local 500-credit ceiling. Company data does not establish legal identity or eligibility. |
