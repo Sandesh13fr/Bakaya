@@ -1,54 +1,39 @@
-# Build status â€” 10 October 2026
+# Build status — 11 October 2026
 
-This is a working **local MVP**, based on the supplied brief and PRD. The original documents are preserved, and legal/market claims were researched separately. No external signup, public deployment, buyer message or filing occurred.
+Bakaya is a working **trusted local receivables-preparation prototype**, not a deployed financial/legal service. Python/FastAPI, Pydantic, SQLite and Decimal power a React/TypeScript workspace.
 
-## Implemented and checked
+## Implemented
 
-- Python/FastAPI service, Pydantic records, SQLite storage and a React/TypeScript interface.
-- Structured CSV/XLSX ingestion; text-searchable PDF and text evidence with page/line references; source hashes and original-file downloads.
-- Optional OpenAI quoted-field extraction adapter, disabled by default. Local validation tests pass; a live paid request has not been made.
-- Invoice references, explicit allocations, partial receipts, evidenced TDS, ambiguous-match questions and control-total reconciliation.
-- Due dates, written-term cap, timely objections, conservative eligibility review and blocking of invoices not yet overdue.
-- Decimal interest with monthly anniversary rests, dated rate periods, payment splits, source references and disclosed conventions.
-- Human review, revision-bound approval, approval invalidation on changes and gated ZIP download.
-- Draft letter, generic ODR field worksheet, complete PDF/CSV interest schedule, invoice/payment summaries, evidence and audit bundle.
-- Synthetic demo, 20-case measured evaluation, labelled failure/recovery simulation and editable CSV samples.
-- Marketing, competitor, pricing and legal-research drafts produced using the requested skills.
+- CSV/XLSX, searchable PDF/text ingestion with original files, hashes and page/line references. Hashes verify stored bytes, not authenticity.
+- Source-quoted typed model proposals; live synthetic extraction validated through the OpenAI-compatible gateway using claude-haiku.
+- Invoice/payment/TDS allocations, ambiguity blockers, control-total reconciliation and disclosed interest conventions with reviewer-supplied dated rates.
+- Bounded planning, persistent steps/revisions, attempt limits, recoverable errors and reviewer waits. Deterministic mode is labeled.
+- Source-backed corrections invalidate approval; current-revision human approval gates PDF/CSV/evidence ZIP export. Nothing is sent or filed.
+- Ledger-first workspace, evidence review, collapsed secondary tools, accessible Radix dialogs and self-hosted fonts.
 
-## Validation evidence
+## Recorded verification
 
-71 Python checks pass (11 October 2026). The frontend production build passes. Headless browser checks exercised blocked approval, evidence allocation, confirmation, approval and ZIP download on desktop and mobile; no page-level horizontal overflow or runtime errors were observed. Exported PDFs were rendered and visually inspected. Sample CSV files successfully produce a reviewable new case.
+Latest pre-release snapshot: **79 backend tests freshly pass on 11 October**, frontend build passes; desktop/mobile allocation → confirmation → approval → ZIP download and tablet overflow checked, with no observed runtime errors. Export PDFs were visually inspected in earlier validation. Revalidate final changes; these are recorded snapshots.
 
-On the 20 labelled synthetic cases, match correctness rises from 14/20 (70%) for a deliberately flawed baseline to 20/20 (100%) for the corrected matcher. False TDS short-payments fall from 4 to 0; both planted ambiguous cases are flagged. Corrected interest agrees to displayed paise with a separate daily reference calculation under the same disclosed convention. This is fixture performance, not an independently certified legal calculation or real-customer benchmark.
+Eight new Crustdata tests are included. Consent and cached buyer lookup passed browser checks at 1440/768/390 widths; the cached call consumed zero new credits. The local ledger shows 4 consumed / 4 reserved of the 500-credit ceiling. GitHub push/PR test-and-build validation has been added; remote CI is not yet claimed as passed.
 
-## Remaining work
+A live four-tool model-planned run saved eight checkpoints and reached reviewer wait; state survived restart. A separate deterministic injected failure resumed with inventory executed once and one failed step retained. This was not a real provider outage or mid-call crash test.
 
-| Area | Current limitation | Next action |
-|---|---|---|
-| Arbitrary messy-document extraction | Structured inputs work; optional quoted text proposals still require review | Validate provider output on consented real documents and improve reconciliation/extraction fixtures |
-| Scanned images | OCR is not configured | Obtain readable originals or add and test an OCR provider |
-| Rate recovery | Failure/retry/fallback is a labelled simulation; dated rates are reviewer inputs | Implement a real RBI rate-history fetch/cache, verification and recovery flow |
-| ODR portal | Generic preparation worksheet; exact current schema unverified | Verify official portal fields, fees and accepted formats manually |
-| Interest/eligibility | Convention and conservative review rules are explicit | Obtain professional validation before real filing |
-| Complex allocations | API supports explicit split allocations; browser review currently targets one invoice per ambiguous receipt | Add a multi-invoice allocation editor; source-backed invoice correction is implemented |
-| Sponsor evidence | Neatlogs application trace verified; Entire checkpoint and cfo.ai workflow pending | Approve pending hooks, capture checkpoint, complete user finance workflow |
-| Crustdata | Buyer enrichment unconnected | Configure optional key, implement/test lookup and owner confirmation |
-| Production | Single trusted local reviewer, no user accounts/tenant isolation | Add authentication, permissions, retention, deployment controls and real-data testing |
-| Docker | Configuration supplied; local daemon unavailable | Start Docker and validate build/run if container deployment is needed |
-| Market | Pricing and demand remain unvalidated | Interview CAs/suppliers and run paid pilots before advertising outcomes |
+Twenty synthetic fixtures: deliberate baseline 14/20 versus corrected matcher 20/20; false TDS short-payments 4 → 0 and planted ambiguities 0/2 → 2/2. This is fixture performance, not customer accuracy or legal certification.
 
-See [manual steps](MANUAL-STEPS.md), [input guide](INPUTS.md) and [market documents](market/README.md). No API key is required to use the local synthetic demo.
+Neatlogs application trace `45d523b11808755c75601c9114fc81b1`: successful workflow/model/inventory spans. One planning call reported 430 tokens / USD0.0007898; team total/remaining balance unknown. Entire saved remote checkpoint linkage, one-line attribution and isolated Git-assisted rollback passed; native Entire session resume restored conversation but **did not roll code back**.
 
-## Integrated verification — 11 October 2026
+## Remaining gates
 
-Ledger-first A and evidence-first B are implemented with self-hosted fonts, linked source facts, invoice corrections, bounded model planning and persistent agent checkpoints. The frontend production build and browser approval/export checks pass at desktop and 390px mobile width, with no page overflow or JavaScript errors. The contrast review identified secondary labels; their green text was darkened to #536747 and the same states recaptured.
+| Area | Current truth / next action |
+| --- | --- |
+| cfo.ai | Authenticated; model/export pending verification. [Current integration status](market/cfo-integration.md). |
+| Crustdata | Authenticated; optional buyer enrichment implemented and browser-verified under the 500-credit ceiling. [Current integration status](market/crustdata-integration.md). |
+| Public evidence | Repository PUBLIC verified; final guest-link checks, progress post, narrated video and submission pending. |
+| Docker / AWS | Docker supplied but daemon unavailable at previous check; AWS STS identity verified only. No deployment. |
+| Real documents | OCR, messy-document validation and multi-invoice browser allocation editing remain incomplete. |
+| Legal / rates / portal | Rate-history fetch/cache, actual portal schema/fees and qualified eligibility/interest review pending. |
+| Production | Authentication/roles, tenant isolation, HTTPS, limits, retention/deletion, backups/restore, monitoring, malware controls and consent policy required. |
+| Market | No CA/customer interviews or paid pilots; pricing and demand are hypotheses. |
 
-Actual Neatlogs application trace `45d523b11808755c75601c9114fc81b1` finalized successfully with workflow, model and inventory tool spans. One gateway planning call reported 430 tokens and USD 0.0007898; remaining shared allowance is unknown. See the judging evidence ledger for exact scope. This remains a trusted local demo, not a production deployment.
-
-## cfo connection update — 11 October 2026
-
-Account OAuth and authenticated workspace discovery succeeded. Page/scenario creation calls were cancelled by the MCP tool surface; readback confirms no created page or blocks. Useful model/export remains pending. See [exact integration status](market/cfo-integration.md) and prepared model inputs.
-
-## Entire checkpoint completed — 11 October 2026
-
-Checkpoint `01M4KRBT9GY4SCGC3WR3NXRGTR` is stored, linked to commit `0958d0e`, scanned for supplied/configured key values, and pushed to origin. Exact remote ref readback matches local. It stores session/subagent context and is marked logs-only; file attribution and rollback remain unverified. This supersedes earlier no-checkpoint status. See [Entire evidence](ENTIRE-EVIDENCE.md).
+See [judging evidence](JUDGING-EVIDENCE.md), [release package](RELEASE-PACKAGE.md) and [manual steps](MANUAL-STEPS.md). No completion percentage is a measured production-readiness score.

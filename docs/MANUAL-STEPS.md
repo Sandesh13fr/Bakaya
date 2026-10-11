@@ -1,39 +1,36 @@
-# What you need to do manually
+# Manual steps — 11 October 2026
 
-## Use the local prototype
+Accounts/keys supplied by the user are configured locally. No more keys are needed to run the synthetic demo. Never commit .env, private claim records or unredacted captures.
 
-1. Run `scripts/start.ps1` from the project folder and open `http://127.0.0.1:8000`.
-2. Load the synthetic demo first. Inspect evidence, blockers and the interest schedule before approval.
-3. For real records, supply the seller's enterprise category, activity, registration evidence and date, buyer details, contract/PO and supply dates, written terms, acceptance/delivery evidence, objection resolution, payments and TDS evidence.
-4. Confirm the RBI **Bank Rate**, its effective dates throughout the delayed period and the calculation convention. The synthetic rate table is not valid real-world rate evidence.
-5. Resolve ambiguous payments and missing evidence; review and approve the document bundle yourself. File through the official portal yourself if appropriate. Bakaya does not file or send anything.
+## Hackathon actions
 
-## Accounts and API keys
+1. Repository is PUBLIC, verified on 11 October; final publication scan found zero configured-key/pattern matches across 190 Git objects/local refs. Check final source/commit links while logged out. Sponsor-dashboard links may need redacted screenshots instead.
+2. If cfo.ai writes remain blocked, reconnect/authorize MCP or create the prepared model in its UI; follow [current status](market/cfo-integration.md). Include pricing, costs, revenue and runway, with assumptions explicit. No real cash/runway is known. Handle your billing yourself; Bakaya has taken no billing action.
+3. Record/upload the final three-minute demo using [release package](RELEASE-PACKAGE.md). Provide its accessible public/unlisted URL and verify all links outside your account.
+4. Publish an honest progress update tagged **#neatHack**, save its URL and do not backdate earlier private development.
+5. On **12 October from 19:00 IST**, check [Discord](https://neatlogs.com/discord) for the final cutoff (23:55 is planned), then quote the official neatlogs X post with team/name, project, public repository and demo. Include cfo plan/evidence links and retain submission confirmation.
 
-| Capability | Local build | Your action for a connected service |
-|---|---|---|
-| Local Python calculations and synthetic demo | No key | None |
-| OpenAI text extraction | Adapter included; disabled; live call untested | Set `OPENAI_API_KEY` and `BAKAYA_ENABLE_LLM=true` in your local environment after approving uploaded-text processing; no model approval or money calculations |
-| OCR for scanned documents | Unreadable scans flagged for review | Provide readable originals or choose an OCR service and configure its credentials; integration still required |
-| neatlogs | Local audit is separate from sponsor tracing | Create account/project, obtain current SDK configuration and connect/test it; use redacted records |
-| Entire | No sponsor checkpoint created | Create account, install/configure supported CLI, connect repository before claiming checkpoints |
-| cfo.ai | OAuth and workspace discovery verified; model write cancelled | Reload/reconnect MCP tools, complete and verify the prepared financial model; see market/cfo-integration.md |
-| Crustdata | Optional; not connected | Claim sponsor access if applicable, obtain key, configure and test buyer lookup; owner must confirm entity |
-| AWS | No deployment | Claim/check access, confirm credits and eligible services, configure EC2 and security; use a single instance if rules require it |
+The builder can complete code and redacted verification. Public posting/submission and any blocked account authorization remain yours. No CA is needed for the synthetic demo; no professional validation is claimed.
 
-Do not paste API keys into this chat or commit them. There is no reason to obtain paid API keys just to try the current local demo. No external account was created, billing cancelled or public service launched by this build.
+## Credentials and limits
 
-## Before using customer financial data
+| Service | Current status / constraint |
+| --- | --- |
+| LiteLLM | Live claude-haiku calls verified. User's shared **USD15/key/30-day** cap governs despite the event page advertising USD20/team. Remaining balance unknown. |
+| Neatlogs | Application trace verified; redact private prompts/files/metadata. |
+| Entire | Hooks/checkpoints/remote linkage verified; bounded credential scan completed. Native session resume is not verified code rollback. |
+| cfo.ai | OAuth/discovery verified; follow model/readback status. No new API key requested. |
+| Crustdata | Key configured; **500 credits**, not requests. Optional enrichment requires owner confirmation and is not legal identity/eligibility evidence. |
+| AWS | STS credential identity verified only. Event allowance covers specified us-east-1 services, not Bedrock; deployment separate. |
+| OCR | Unconnected. Use readable originals; select/test a provider only when real scanned-evidence support is needed. |
 
-The current service is intended for a single trusted local reviewer. Add authentication, permission checks and tenant isolation before exposing it publicly. Establish retention/deletion, backups, HTTPS, upload malware screening, redacted tracing and a privacy policy. Obtain the customer's permission to process their documents and review legal claims with a qualified professional.
+## Before real customers / public production
 
-## Market validation and hackathon submission
+- Authentication, roles and tenant isolation with case/file/export authorization.
+- Hosting/domain/budget, HTTPS, upload/rate limits, malware controls, consent/privacy policy and retention/deletion.
+- Managed secrets, monitored failures/costs and backups verified by restore. Test an actual deployment; local Docker has not run.
+- Consented real-document OCR/extraction validation and confirmed buyer identity, allocations, TDS, acceptance/registration dates.
+- Verified RBI rate history, portal fields/fees and qualified eligibility/interest review before real filing. Send/file manually after review.
+- Supplier/reviewer interviews and paid pilots before treating prices/demand as established.
 
-- Interview at least three CAs or suppliers. Ask about current claim preparation, missing evidence, time spent, and whether they will pay for a pilot. Prices in the supplied PRD remain hypotheses.
-- Confirm the actual hackathon schedule and sponsor rules. The PRD lists **Monday, 12 October 2026, 7:00–11:55 PM IST**; this build has not independently verified the event deadline or access-link expiry.
-- Create and publish the repository if wanted; establish sponsor tracing/checkpoints with real evidence.
-- Record the demo and capture actual evaluation outputs. Show that the data is synthetic and distinguish the intentionally simplified baseline from the corrected matcher.
-- Add sponsor trace/checkpoint links and actual measured costs; prepare the cfo.ai export.
-- Review and publish any social posts and submit the entry yourself. No outreach or posts have been sent.
-
-Detailed legal and market research is in `docs/market/`. The supplied documents are preserved in `docs/original-prd.md` and `docs/original-message.txt`.
+See [input guide](INPUTS.md). Original supplied documents remain preserved.

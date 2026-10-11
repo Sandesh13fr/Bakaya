@@ -43,11 +43,11 @@ You must supply and verify real documents, resolve ambiguous allocations, substa
 
 ## Sponsor integrations and credentials
 
-The local build does not require sponsor credentials. An optional OpenAI text-extraction adapter is included but has not been validated against a paid live API. Set `OPENAI_API_KEY`, `BAKAYA_ENABLE_LLM=true` and optionally `BAKAYA_OPENAI_MODEL` to enable it. This sends uploaded text to OpenAI; enable it only with permission to process those records. Each extracted field requires a source quote and typed validation, but still requires review. See `.env.example` and the [OpenAI structured outputs documentation](https://developers.openai.com/api/docs/guides/structured-outputs).
+The local synthetic demo requires no keys. Live synthetic extraction and bounded planning using claude-haiku through the OpenAI-compatible gateway are verified. Model proposals need source quotes and typed validation; Python calculates money and people approve export. Enable processing only with permission for the records. Configuration is local; see `.env.example` and [tracing](docs/TRACING.md).
 
-OCR services, neatlogs and Crustdata need their respective credentials and a tested integration before they can be advertised as connected. Entire needs account/CLI/repository setup. cfo.ai needs account setup and a business plan based on observed costs. AWS hosting needs your account access, region selection and deployment configuration. Do not paste secrets into chat, commit them, or include private records in public traces.
+Neatlogs application tracing and Entire saved/pushed checkpoints are verified. Crustdata buyer enrichment is implemented and browser-verified with consent and cached lookup; follow [current enrichment status](docs/market/crustdata-integration.md) for the app workflow. cfo.ai authentication was verified previously, but useful financial-model creation remains pending workspace/tool access and successful readback; [status](docs/market/cfo-integration.md). OCR remains unconnected. AWS STS identity is verified, not deployment. Do not commit secrets or private records.
 
-These sponsor workflows, customer interviews, public posts, public repository creation and hackathon submission remain manual unless separately completed. No sponsor account, billing change, outreach, submission or public deployment is implied by this repository.
+The repository is now public, verified on 11 October. Final public progress posts, narrated demo and hackathon submission remain manual. No billing action, outreach, portal filing or production deployment is implied. See the [release package](docs/RELEASE-PACKAGE.md) and [current evidence ledger](docs/JUDGING-EVIDENCE.md).
 
 ## Validation
 
@@ -59,7 +59,7 @@ npm.cmd run build
 
 Refer to the evaluation outputs for measured synthetic performance. Fixture performance is not production accuracy, and a deliberately simplified baseline is not evidence of a historical deployed failure.
 
-Validated locally: 52 Python tests; frontend production build; desktop/mobile browser workflow from blocked approval through evidence review and ZIP download; sample CSV ingestion; and visual inspection of exported PDFs. The 20-case synthetic benchmark scored 70% matching for the deliberately simplified baseline and 100% for the evidence-aware matcher, with fixed interest figures agreeing with the independent reference calculation to displayed paise. Scans/OCR and paid live model extraction have not been validated. Rate-fetch failure recovery is an explicitly labelled simulation, not a live RBI request.
+Recorded verification: 79 Python tests; frontend build; desktop/mobile evidence review, human approval and ZIP download; tablet overflow check; sample CSV ingestion and earlier visual PDF inspection. Live synthetic model extraction/planning and separate injected local recovery passed. The 20-case synthetic benchmark scored 70% for a deliberate baseline and 100% for the evidence-aware matcher under disclosed conventions. This is not production accuracy. OCR and live RBI rate-fetch recovery remain unverified. Revalidate new changes before release.
 
 ## Deployment
 

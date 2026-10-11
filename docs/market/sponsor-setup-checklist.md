@@ -1,32 +1,26 @@
-# Manual sponsor setup and submission evidence
+# Sponsor and submission checklist — 11 October 2026
 
-**Prepared 2026-10-10 from the supplied PRD. Unverified sponsor terms are checklist items, not facts certified by this document.** No account was created, billing changed, access claimed, message sent or deployment performed for market research.
+Current rules verified with a live Firecrawl fetch of the [official event page](https://neatlogs.com/hackathon) on 11 October. This replaces the original PRD-only checklist; expiry dates and account-specific balances still require their own evidence.
 
-Use the original organizer emails/official event portal to verify deadlines, credits, restrictions and URLs. Do not put invite tokens, API keys or private email contents in a public repository. The PRD's 12 October 19:00–23:55 IST submission window and 11 October 08:54 IST AWS-link expiry need original-source confirmation.
+| Sponsor | Current evidence | Remaining / limits |
+| --- | --- | --- |
+| Neatlogs — mandatory | Finalized actual application trace with workflow/model/inventory spans. | Final redacted demonstration/comparison; do not imply every historical run was traced. |
+| Entire — mandatory | Saved remote checkpoints, commit linkage and tested attribution. | Native session resume failed code rollback; Git-assisted isolated rollback passed. [Evidence](../ENTIRE-EVIDENCE.md). |
+| cfo.ai — mandatory | OAuth/discovery succeeded previously; user has signed in; workspace shows Loading while model access is investigated. | Useful plan/write/readback/export pending. Must cover pricing, costs, revenue and runway with assumptions. [Status](cfo-integration.md). |
+| Crustdata — optional | Authentication/free credit check verified. | Consented app enrichment implemented/browser-verified; cached lookup zero new credits, local ledger 4 consumed / 4 reserved of 500; user's working cap 500 credits remains despite advertised 5,000 event credits. [Status](crustdata-integration.md). |
+| AWS — optional | STS identity verified only. | Current event page allows EC2, Lambda, IAM roles and load balancers in us-east-1, USD25/team for eligible first 350 checked-in teams; excludes Bedrock. No deployment/credit-balance verification. |
+| LiteLLM — resource | Real claude-haiku requests/extraction/planning. | Page advertises USD20/team, but use user's stricter shared USD15/key/30-day cap; remaining unknown. |
 
-| Sponsor | Manual action | Evidence needed | Boundary / unresolved item |
-|---|---|---|---|
-| neatlogs | Verify official onboarding; owner creates project and supplies secret locally; configure sanitized traces; run synthetic baseline/fix/recovery | Project/run URLs, dated cost/latency, before/after metrics, error and recovery | Confirm pricing, retention, sensitive-field filtering; do not trace real bank details or secrets |
-| Entire | Confirm event link `hack.entire.io/neathacks-2026` against organizer source; install/authenticate per official instructions; enable on intended repository | First connected checkpoint, fix checkpoint ID+URL, coding-session linkage, graph output | Do not claim “from commit one” if connection started later; record actual start |
-| cfo.ai | Verify event offer and billing terms; owner chooses signup/trial and any renewal settings; enter clearly labeled assumptions followed by observed costs | Exported dated model with source inputs and sponsor-cost vs list-price view | PRD says cancel billing immediately; this document is **not** authority to cancel or change a paid account. Verify effect on trial access first |
-| Crustdata (optional) | Verify official offer/code ordering before signup; keep code private; owner supplies API access if desired | One timestamped synthetic/demo lookup with source and owner confirmation | Lookup is enrichment, not legal identity proof; confirm credit use and caching permissions |
-| AWS (optional) | Check invite expiry in original email; owner claims access; verify approved region/services/instance limits; create a budget alert | Resource/region list, live URL if deployed, credit balance and estimated post-credit monthly bill | PRD says one EC2 in us-east-1 and excludes S3/Bedrock; treat as event-specific until verified. No infrastructure purchase was made |
+Official cfo onboarding page says a card is required and immediate cancellation avoids billing. Account owner must review their actual billing/settings and handle any changes; no account cancellation, bank connection or purchase was performed by Bakaya.
 
-## Current integration state
+## Final handoff
 
-At drafting: neatlogs, Entire, cfo.ai and Crustdata are not connected. The optional OpenAI extraction adapter is implemented but disabled by default (`BAKAYA_ENABLE_LLM` plus `OPENAI_API_KEY` enables it); live inference is untested. OCR is not configured. Local functionality and local logs are not proof of sponsor integration. See [manual setup steps](../MANUAL-STEPS.md) and the repository README for current implementation details.
+- [x] Supplied secrets kept local; repository public state verified on 11 October; bounded publication scan found no configured keys/patterns.
+- [x] Neatlogs application proof and Entire checkpoint proof recorded.
+- [ ] Actual cfo model/export verified, not merely prepared CSV inputs.
+- [ ] Final code SHA/tests/build/demo and guest-access links reconciled.
+- [ ] Narrated demo and honest #neatHack public progress URLs supplied.
+- [ ] User checks Discord cutoff and quotes official neatlogs submission post with team/name/project/publicrepo/demo.
+- [ ] User retains submission confirmation and later reviews account renewals/resources/retention.
 
-## Sequence and proof register
-
-- [ ] Founder verifies sponsor/event terms and whether an India-focused project is accepted.
-- [ ] Confirm who owns each account, spend cap, expiry and shutdown responsibility.
-- [ ] Add only local environment variables for secrets; review ignore rules before any public push.
-- [ ] Capture synthetic-only connection proof for each required sponsor.
-- [ ] Record actual integration state: planned / configured / successful test / used in measured demo.
-- [ ] Reconcile evaluated code version, sample-data version, baseline/fix results and exact trace/checkpoint IDs.
-- [ ] Replace economics assumptions with observed costs where available, leaving unknown support/list-price inputs explicit.
-- [ ] Verify repository visibility, redaction, README links, demo length and current submission fields.
-- [ ] Founder reviews final public post/submission and explicitly authorizes sending/publishing.
-- [ ] After event, owner reviews renewals, resource shutdown and retention settings; no automatic cancellation implied.
-
-Proof log template: sponsor | owner | setup date | plan/offer | expiry | approved spend | integration mode | successful run ID | public-safe URL | unresolved issue. Empty cells mean unknown, not completed.
+Submission opens **12 October, 19:00 IST**; **23:55 IST is planned close**, final cutoff on Discord. See [release package](../RELEASE-PACKAGE.md), [milestones](../HACKATHON-MILESTONES.md) and [manual steps](../MANUAL-STEPS.md). Nothing has been posted/submitted by this document.

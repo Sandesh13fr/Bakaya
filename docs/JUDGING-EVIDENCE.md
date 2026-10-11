@@ -1,85 +1,35 @@
-# Bakaya judging evidence ledger
+# Judging evidence — current snapshot, 11 October 2026
 
-Draft for review. Updated: 11 October 2026. Development is continuing; refresh the final validation and capture references before submission. This ledger records evidence and gaps, not predicted judging scores. Current evidence supersedes older sponsor/test status in the original MVP documentation where explicitly stated below.
+The [official event page](https://neatlogs.com/hackathon), fetched live with Firecrawl on 11 October, weights five categories. These are **weights, not a predicted score**. Mandatory sponsors are Neatlogs, Entire and cfo.ai. The cfo business plan must cover pricing, costs, revenue and runway. Submission requires a public repository with event-period commits and an accessible demo; public updates should be tagged #neatHack.
 
-The [official hackathon page](https://neatlogs.com/hackathon) assigns **30% agent quality, 25% effective sponsor use, 20% demo, 15% building in public, and 10% usefulness/originality**. Neatlogs, Entire, and cfo.ai are mandatory sponsor integrations. Submission opens **12 October 2026 at 19:00 IST and closes at 23:55 IST**. Event details were checked for the accompanying proposal on 10 October; confirm the submission form before the final upload.
-
-## Evidence labels
-
-- **Verified local:** inspected implementation, configuration, or a recorded local check. This does not imply deployment or independent customer validation.
-- **Verified external:** a provider response or authenticated service check actually succeeded, with the scope stated below.
-- **Implemented; final validation pending:** code exists, but the latest integrated test or demonstration has not yet been recorded.
-- **Pending:** a required action or evidence artifact remains outstanding.
-- **Planned:** a proposed extension; exclude it from claims about the submitted build until implemented and verified.
-
-## Criterion coverage
-
-| Criterion | Weight | Evidence available now | Remaining evidence for submission |
+| Criterion | Weight | Verified evidence | Remaining evidence |
 | --- | ---: | --- | --- |
-| Agent quality | 30% | 71 backend tests pass. A real HTTP model-planned run completed four tools with eight checkpoints and paused for review; saved state survived a server restart. A separate injected local failure recovered without repeating inventory. See E01–E05. | Capture the verified run, changed-input revalidation and approval-gated export in the final demo. Keep deterministic checks visible. |
-| Effective sponsor use | 25% | Actual gateway request and extraction validation; finalized Neatlogs application trace with workflow, model and tool spans; separate Doctor diagnostic; Entire enabled locally. See E06–E09. | Capture the verified application trace in the demo, approve the seven pending Entire Codex hooks and capture a checkpoint, complete a genuine cfo.ai workflow with the user's own actions. All three mandatory sponsors need useful, demonstrable evidence. |
-| Demo | 20% | Existing local review/export workflow and synthetic samples; storyboard below. Previous MVP validation includes desktop/mobile review and visually inspected PDFs. | Final integrated screen recording with legible inputs, model decision, deterministic verification, a clearly labeled simulated failure, recovery, sponsor proof, and downloadable packet. |
-| Building in public | 15% | Dated commits pushed to the PRIVATE GitHub repository. The user explicitly chose to keep it private for now and authorized batch pushes. See E10. | Public evidence remains pending under the user's current privacy choice. Prepare dated updates and a baseline-versus-new-work explanation; publish only if later authorized. Private pushes alone do not establish public progress. |
-| Usefulness and originality | 10% | Specific workflow for Indian micro/small business payment evidence, reconciliation, and reviewer preparation; source-grounded legal and competitor research; transparent pricing hypotheses. See E11. | Demonstrate a complete synthetic case and acknowledge overlapping competitor capabilities. CA review and real customer evidence are unavailable; do not imply either occurred. |
+| The agent | 30% | Bounded planning; deterministic Decimal verification; saved checkpoints/reviewer wait; restart persistence; separately injected recovery without repeated inventory; revision-bound approval/export. | Final integrated recording and release checks at submitted SHA. |
+| Sponsor use | 25% | Real model request; finalized Neatlogs application trace; Entire permanent checkpoints, attribution and remote readback. | cfo useful model/readback/export; final run trace and meaningful before/after evidence if claiming improvement. |
+| Demo | 20% | Desktop/mobile approval/export checks; synthetic inputs; [script](RELEASE-PACKAGE.md). | Actual final video and accessible URL. |
+| Building in public | 15% | Dated event-period commits; repository PUBLIC, verified on 11 October. | Verify public source/commits; honest public progress update and URL. Private pushes alone are insufficient. |
+| Usefulness/originality | 10% | Specific evidence-preparation/reconciliation workflow and attributed legal/competitor research. | Real user/professional validation remains unavailable; synthetic case only. |
 
 ## Evidence register
 
-| ID / state | Concrete evidence | Scope and limit |
-| --- | --- | --- |
-| E01 — Verified local | Coordinating builder reports **71 backend tests passing**. Live run `2557a200a4cb48abaa05f4c74ee9e214` saved eight checkpoints and stopped at `waiting_review`; its saved state remained `waiting_review` after a server restart. See `artifacts/qa/live-agent-run.json` and the [redacted evidence summary](evidence/synthetic-agent-validation.json). | The run proved persistence across restart at a reviewer wait. This is not evidence of uninterrupted recovery from a mid-call process crash. Final release tests still need to match the submitted SHA. |
-| E02 — Verified live model-planned run | Four actual model plans selected `inventory_evidence`, `analyze_ledger`, `verify_reconciliation`, then `request_review`. Analysis and reconciliation each offered a genuine alternative, `request_review`; inventory and final review each had one allowed tool. All four tools completed and four blockers remained for human review. | Selection is bounded by deterministic eligibility, not unrestricted autonomy. No model extraction occurred within this particular run (`model_attempts: 0`); the separately verified buyer extraction is E03. No approval or packet was produced by this run. |
-| E03 — Verified external, narrow scope | Initial gateway `claude-haiku` structured-output request returned HTTP 200 and 166 total tokens. A synthetic buyer extraction passed the application's `validate_extraction` validation. See `docs/TRACING.md`. | This is a real model call using synthetic data. It does not prove every extraction type, legal correctness, a complete agent run, or an exact monetary cost. |
-| E04 — Verified local | Typed records; source quote checks; numerical evidence checks; deterministic Decimal identities for invoice settlement and bank allocations; explicit reviewer approval required for the current source revision before packet generation. | Quote presence is not full semantic proof. The reviewer still checks identity, dates, allocations, TDS treatment, legal assumptions, and output. No sending or portal filing is performed. |
-| E05 — Verified local recovery demonstration | `artifacts/qa/recovery-run.json`: run `12f1bf9b0cb84c8093b8e59f540afffe` moved from `recoverable_failure` to `waiting_review` after an explicitly injected `verify_reconciliation` failure. Inventory ran once; one failed step remained in the audit; reconciliation succeeded on its second attempt. | This recovery run used deterministic planning and no paid model calls. It proves bounded local recovery, not a real RBI/provider outage. Previous synthetic evaluation remains 14/20 deliberate baseline versus 20/20 fixed, with false TDS short-payments four to zero; refresh those separate evaluation results for the final build. |
-| E06 — Verified external | Neatlogs SDK 1.4.26 Doctor passed authenticated finalized trace readback, parent relationships, and numeric token-usage validation. Exact Doctor trace: `9f12d6ec853a4d4ec8b43b8da7c4fb57`. | This is a diagnostic trace, distinct from the Bakaya workflow trace. Do not use it as proof of complete application observability. |
-| E07 — Verified external application trace | Application trace `45d523b11808755c75601c9114fc81b1` finalized with HTTP 200 and overall `SUCCESS`. Exactly three successful spans: root `prepare-invoice-case` workflow, child `claude-haiku` LLM, and child `inventory_evidence` tool call. Parent relationships were valid under root span `5f67592c71cf139a`. | This verifies one actual HTTP application planning/inventory step, separate from the four-tool E02 run and Doctor diagnostic. It does not establish trace coverage for every tool or the whole case lifecycle. Capture only redacted evidence; omit raw prompts and structured project metadata. |
-| E08 — Verified local configuration; checkpoint pending | `.entire/settings.json` has `enabled: true`, Git-ref checkpoints, and telemetry disabled. | Seven Codex hook approvals are pending. Configuration alone does not demonstrate a captured checkpoint or development-session linkage. Capture a real checkpoint after approval; do not invent its identifier. |
-| E09 — Pending | cfo.ai account/workflow evidence is not complete. | The user must perform any account, card, billing, or cancellation actions. A plan, logo, or screenshot of a landing page is not an effective-use demonstration. Show an actual authorized workflow and its useful result, redacted. |
-| E10 — Verified commits; pushed privately | Existing MVP snapshots span `afed99a` through `b18ecc1`, dated 10 October 2026 at 18:37–18:38 IST. New commits: `7c63b71` bounded model planning and gateway usage telemetry at 18:42:54 IST; `29f59c4` checkpointed case agent and source-backed review corrections at 18:44:10 IST. The coordinating builder confirms both were pushed to the PRIVATE [Bakaya repository](https://github.com/Sandesh13fr/Bakaya). | The user authorized batch pushes and explicitly requested keeping the repository private for now. Public evidence remains pending. A snapshot date does not prove every included MVP feature originated then; describe new work using the actual diffs. |
-| E11 — Verified research artifacts; market hypotheses | `docs/market/` contains the draft marketing plan, competitor evidence, legal research, pricing hypotheses and sponsor checklist. | No CA interview, paid conversion, customer recovery outcome, or measured unit cost is claimed. Pricing is a hypothesis. Legal eligibility, registration timing, tax treatment, rate history and portal requirements retain explicit review questions. |
-| E12 — Verified external identity only | AWS STS identity check succeeded, as reported by the coordinating agent. | This proves credential identity, not deployment, application availability, credit balance, region/VPC compliance, or a completed AWS integration. AWS is optional. Crustdata remains pending because its key is unavailable. |
-| E13 — Provider-reported usage, one call | One planning call reported **USD 0.0007898**, with **358 prompt tokens and 72 completion tokens**. Actual usage is recorded in the local SQLite ledger. | This is the gateway's reported cost for that call, not an independently reconciled invoice or the cost of all four plans. Other calls and the team's remaining allowance are not inferred. |
+| Evidence | Exact scope / limitation |
+| --- | --- |
+| Tests / UI | Fresh 79 backend tests pass on 11 October; frontend build and desktop/mobile review/export plus tablet overflow passed. Revalidate final changes; do not advertise an evergreen test count. |
+| Live agent | Run `2557a200a4cb48abaa05f4c74ee9e214`: four tools/eight saved checkpoints/reviewer wait, retained after restart. No extraction or export within that run. |
+| Extraction | Separate real claude-haiku synthetic buyer proposal passed source-quote/type validation. Initial structured-output call: HTTP200, 166 tokens. Not legal correctness. |
+| Recovery | Run `12f1bf9b0cb84c8093b8e59f540afffe`: injected reconciliation failure, same-run resume, inventory once, failed step retained. Deterministic/local, not provider outage. |
+| Neatlogs | Application trace `45d523b11808755c75601c9114fc81b1`, successful root prepare-invoice-case with claude-haiku and inventory_evidence children. One step, not complete lifecycle. Doctor `9f12d6ec853a4d4ec8b43b8da7c4fb57` is separate diagnostics. |
+| Cost | One call: 358 prompt + 72 completion tokens, reported USD0.0007898. Not total spend or packet cost. User cap USD15/shared key/30 days; remaining unknown. |
+| Entire | Checkpoint `01M4KRBT9GY4SCGC3WR3NXRGTR` linked `0958d0e`, remote object matches; latest UI checkpoint `01M4KYXAQ24EBCG4NE32TZQA0H` linked `ad4a7ab`. [Detailed evidence](ENTIRE-EVIDENCE.md). |
+| Attribution / rollback | Tested .entire/settings.json line15 attributes to Codex/checkpoint/commit. Native resume restored logs but did not restore code; explicit Git rollback passed in isolated clone only. |
+| cfo.ai | OAuth/discovery verified; actual useful model remains pending until successful readback. [Current status](market/cfo-integration.md). Prepared assumptions are not a sponsor-created model. |
+| Crustdata | Authentication/free balance verified; optional app enrichment implemented and browser-verified with consent at 1440/768/390; cached lookup spent zero new credits; local ledger 4 consumed / 4 reserved of 500. [Current status](market/crustdata-integration.md). Not identity/eligibility proof. |
+| AWS | STS identity only; no deployed service, verified credit balance or production availability. |
+| Synthetic comparison | 20 fixtures: deliberately flawed baseline 14/20 vs corrected 20/20; false TDS 4→0, ambiguity 0/2→2/2. Not production accuracy or a trace-based historical improvement. |
+| Research | [Market documents](market/README.md): source-backed research and pricing hypotheses; no CA interviews, paid demand or recovery outcome claimed. |
 
-## Three-minute demonstration storyboard
+The first MVP is the baseline; describe event-period changes using actual diffs. Sponsor logos/configuration do not substitute for useful workflows. No raw private evidence, public post, filing or billing action is part of this ledger.
 
-Use a named synthetic case and display a persistent **Synthetic demonstration — reviewer preparation only** label. Capture the final build, not the proposal's concept boards. If a step has not succeeded, mark it pending rather than editing the recording to imply it did.
+## Final release evidence
 
-| Time | Show | Narration and evidence |
-| --- | --- | --- |
-| 0:00–0:20 | Invoice, receipt, TDS evidence and an ambiguous buyer record in the synthetic case. | “Bakaya prepares a payment evidence packet so a reviewer can inspect what is supported and what remains unresolved.” Explain the consequence of counting a valid TDS deduction as unpaid principal. |
-| 0:20–0:45 | Actual model-plan event: allowed tools, selected tool, concise reason, run ID. | Explain what the model chooses and what the deterministic eligibility rules constrain. Do not fabricate a model plan if the provider is unavailable. |
-| 0:45–1:10 | Actual extraction result, supporting quotation and validation; deterministic reconciliation result. | Show one accepted field and one unresolved item. Explain that model text cannot approve a claim or replace the calculation engine. |
-| 1:10–1:35 | Show the recorded injected failure and recovery under the same run ID, with inventory count one and one failed audit step. Separately show the live run's reviewer-wait state persisted after restart. | “This injected local fault recovers without repeating inventory. The separate model-planned run also retains its reviewer-wait state across a service restart.” Do not combine the two experiments into a claim of mid-call crash recovery. |
-| 1:35–2:00 | Human corrects an ambiguity; revision changes; previous approval is invalidated; tool reruns; reviewer approves; packet downloads. | Show the pre-approval export block and post-approval ZIP. State that no notice was sent and no portal case was filed. |
-| 2:00–2:35 | Neatlogs **application** trace, actual Entire checkpoint, and actual cfo.ai result. | Tie each sponsor to useful work: trace diagnosis, recoverable development provenance, and the user's verified finance workflow. Doctor trace may be shown separately as integration diagnostics. Missing mandatory evidence must remain visibly pending. |
-| 2:35–3:00 | Final synthetic comparison, dated change log, research caveats and next user test. | Label sample size and deliberate baseline. State that CA review and customer validation are next steps. Link to the submitted repository and evidence files only after checking public access. |
-
-Capture readable excerpts rather than scrolling quickly through a terminal. Store redacted recording/screenshots with the final commit SHA, run ID, application trace ID, and Entire checkpoint ID. Keep the original capture privately available for provenance. Avoid extra paid calls merely to get a cleaner recording; use a previously captured successful run with its date disclosed.
-
-## Claims that must remain narrow
-
-- This is a synthetic demonstration and a preparation assistant, not a validated legal service, recovery guarantee, government partner, or automatic filing system.
-- Existing MVP work is the baseline. Separately identify event-period changes such as persistent tool execution, bounded planning, checkpoints, observability and sponsor evidence only when their final diffs and captures support them.
-- A successful Doctor trace, enabled Entire configuration, and an AWS identity check each prove different things. None substitutes for an application trace, captured checkpoint, cfo.ai workflow, or deployment.
-- The shared gateway limit is **USD 15 per key per 30 days across all teammates**, according to the user. One planning call reported USD 0.0007898. Total team spend, remaining balance and model pricing have not been verified; do not extrapolate that one cost to other calls.
-- No public post, financial-account action, repository visibility change, portal filing or external outreach was performed to create this ledger.
-
-## Final evidence handoff
-
-Before recording the final result, the coordinating builder should replace the pending statuses with dated evidence: final test/build report, final commit SHA and diff from baseline, actual agent-run capture, actual application trace readback, Entire checkpoint, cfo.ai result, public evidence URLs, and submission confirmation. Preserve failed or incomplete results honestly. See [the milestone checklist](HACKATHON-MILESTONES.md) for the sequence and owners.
-
-## Workspace completion — 11 October 2026
-
-Current integration verified: 71 backend tests pass; TypeScript/Vite production build passes; browser source review, human approval and ZIP download pass on desktop/mobile with no page-level overflow or runtime errors. A+B workspace is implemented. Secondary text contrast was corrected and recaptured; fresh finish reviewer disposition: ship for the scored contrast fix (6.18:1 on white, above 5.3:1 on selected/totals surfaces). Separate quality-bar card was unavailable. Final video, Entire checkpoint, cfo.ai workflow, public evidence and authorized submission remain outstanding. GitHub stays private by user instruction.
-
-## cfo connection update — 11 October 2026
-
-Account OAuth and authenticated workspace discovery succeeded. Page/scenario creation calls were cancelled by the MCP tool surface; readback confirms no created page or blocks. Useful model/export remains pending. See [exact integration status](market/cfo-integration.md) and prepared model inputs.
-
-## Entire verification — 11 October 2026
-
-Doctor now confirms hook approval records PRESENT, replacing the earlier pending-approval status. Saved checkpoints on main:0. Remote checkpoint refs: none. Two pending activity records have empty IDs; they do not establish persistent commit linkage. See [verification report](ENTIRE-EVIDENCE.md).
-
-## Entire checkpoint completed — 11 October 2026
-
-Checkpoint `01M4KRBT9GY4SCGC3WR3NXRGTR` is stored, linked to commit `0958d0e`, scanned for supplied/configured key values, and pushed to origin. Exact remote ref readback matches local. It stores session/subagent context and is marked logs-only; file attribution and rollback remain unverified. This supersedes earlier no-checkpoint status. See [Entire evidence](ENTIRE-EVIDENCE.md).
+Record the final SHA and tests/build; attach redacted before/after traces when available, actual recovery evidence, Entire checkpoint, cfo plan/export and video/repository/public-update URLs. Verify guest access. Missing artifacts stay pending. See [milestones](HACKATHON-MILESTONES.md) and [submission package](RELEASE-PACKAGE.md).
