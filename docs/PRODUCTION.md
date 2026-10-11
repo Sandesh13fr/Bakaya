@@ -79,3 +79,8 @@ Authentication is implemented and tested with server-provisioned viewer/editor/r
 Frontend: https://bakayaai-sandesh.vercel.app. AWS backend: https://3-93-34-52.sslip.io. Certificate validation, reviewer login, secure cookie, authenticated cases, logout and session revocation passed. The dedicated t3.small uses 16 GB unencrypted gp3 under explicit owner approval; synthetic data only. Daily encrypted backups are active; one downloaded off-host archive restored successfully. Automated off-host transfer, professional sign-off and sensitive-document production readiness remain pending. Stop the instance after the event; stop/start changes its public IP and requires updating the backend hostname and frontend rewrite.
 
 Login details are in the ignored local artifacts/deploy/operator-access.txt; never publish that file. Live browser inspection was unavailable, so deployed UI visual QA remains pending.
+
+
+## Public demo hardening — 11 October 2026
+
+Paid model/Crustdata requests require an administrator; the public reviewer can prepare, review and export synthetic packets using local tools. Production tenants are limited to ten cases, fifty MiB of original upload reservations, one hundred sources per case and one thousand audit events per case. Failed upload reservations require operator review; no evidence/audit is silently deleted. Five active sessions per account bound session growth. Client-supplied original-byte metadata is ignored; ingestion assigns hashes. Approvals record actual account/tenant/role. Unknown environment names fail startup rather than enabling anonymous access. Derived agent packet copies are not stored repeatedly; export builds the ZIP on demand. These controls do not distinguish individual people sharing the public demo account.
