@@ -15,7 +15,7 @@ Bakaya is a working **trusted local receivables-preparation prototype**, not a d
 
 Latest pre-release snapshot: **79 backend tests freshly pass on 11 October**, frontend build passes; desktop/mobile allocation → confirmation → approval → ZIP download and tablet overflow checked, with no observed runtime errors. Export PDFs were visually inspected in earlier validation. Revalidate final changes; these are recorded snapshots.
 
-Eight new Crustdata tests are included. Consent and cached buyer lookup passed browser checks at 1440/768/390 widths; the cached call consumed zero new credits. The local ledger shows 4 consumed / 4 reserved of the 500-credit ceiling. GitHub push/PR test-and-build validation has been added; remote CI is not yet claimed as passed.
+Eight new Crustdata tests are included. Consent and cached buyer lookup passed browser checks at 1440/768/390 widths; the cached call consumed zero new credits. The local ledger shows 4 consumed / 4 reserved of the 500-credit ceiling. GitHub push/PR test-and-build validation has been added; remote CI passed for release commit `e0ab49f` (GitHub run 38123570935).
 
 A live four-tool model-planned run saved eight checkpoints and reached reviewer wait; state survived restart. A separate deterministic injected failure resumed with inventory executed once and one failed step retained. This was not a real provider outage or mid-call crash test.
 
