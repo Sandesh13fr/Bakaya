@@ -4,16 +4,53 @@ from __future__ import annotations
 import csv
 import hashlib
 import io
+import os
 import re
+import shutil
+import subprocess
+import tempfile
 import uuid
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
+from PIL import Image
 
 from .models import Invoice, Payment, SourceRef, Supplier, Buyer, RatePeriod, Message, PurchaseOrder, Delivery, Allocation
 
 MAX_FILE_BYTES = 15 * 1024 * 1024
 ALLOWED = {".csv", ".xlsx", ".pdf", ".txt", ".png", ".jpg", ".jpeg", ".webp", ".tif", ".tiff"}
+
+
+def tesseract_command():
+    if os.getenv("BAKAYA_OCR_ENABLED", "false").lower() != "true":
+        return None
+    configured = os.getenv("TESSERACT_CMD")
+    executable = shutil.which(configured or "tesseract")
+    if not executable and Path("C:/Program Files/Tesseract-OCR/tesseract.exe").is_file():
+        executable = None if configured else "C:/Program Files/Tesseract-OCR/tesseract.exe"
+    return executable
+
+
+def ocr_available():
+    return bool(tesseract_command())
+
+
+def ocr_image(data: bytes) -> str:
+    """Local, opt-in OCR produces reviewable text, never financial facts."""
+    executable = tesseract_command()
+    if not executable:
+        return ""
+    with Image.open(io.BytesIO(data)) as image:
+        if getattr(image, "n_frames", 1) != 1:
+            raise ValueError("Multi-frame images require a page-preserving PDF upload")
+        if image.width * image.height > 20_000_000:
+            raise ValueError("OCR image exceeds 20 million pixels")
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "page.png"
+            image.convert("RGB").save(path)
+            result = subprocess.run([executable, str(path), "stdout", "-l", "eng", "--psm", "6"],
+                                    capture_output=True, timeout=30, check=True)
+    return result.stdout.decode("utf-8")[:100000].strip()
 
 
 def parse_date(value):
@@ -92,6 +129,13 @@ def ingest_bytes(filename: str, data: bytes):
     if suffix in {".png",".jpg",".jpeg",".webp",".tif",".tiff"}:
         base.status="ocr_unavailable"
         base.text="OCR is not configured. Re-upload text-searchable evidence or provide a structured CSV with verified facts. No date or amount inferred."
+        try:
+            text = ocr_image(data)
+            if text:
+                base.text, base.status = text, "unstructured_review"
+                base.kind = "ocr_document"
+        except (OSError, ValueError, subprocess.SubprocessError, Image.DecompressionBombError):
+            errors.append("OCR failed or exceeded its limit; upload searchable evidence or verified structured facts.")
         return sources,extracted,errors
     if suffix in {".csv",".xlsx"}:
         if suffix == ".csv":
@@ -127,12 +171,35 @@ def ingest_bytes(filename: str, data: bytes):
     if suffix == ".pdf":
         from pypdf import PdfReader
         reader=PdfReader(io.BytesIO(data))
+        if len(reader.pages) > 50:
+            raise ValueError("PDF exceeds 50 page limit")
         pages=[]
         for n,page in enumerate(reader.pages,1):
             text=page.extract_text() or ""
+            if not text.strip() and os.getenv("BAKAYA_OCR_ENABLED", "false").lower() == "true":
+                try:
+                    import pypdfium2 as pdfium
+                    with pdfium.PdfDocument(data) as document:
+                        scan = document[n-1]
+                        try:
+                            if scan.get_width() * scan.get_height() * 9 > 20_000_000:
+                                raise ValueError("OCR page exceeds pixel limit")
+                            bitmap = scan.render(scale=3)
+                            image = bitmap.to_pil()
+                            output = io.BytesIO()
+                            image.save(output, format="PNG")
+                            text = ocr_image(output.getvalue())
+                            image.close()
+                            bitmap.close()
+                        finally:
+                            scan.close()
+                except (OSError, ValueError, subprocess.SubprocessError, pdfium.PdfiumError):
+                    errors.append(f"Page {n}: OCR failed; manual evidence review required.")
             sid=f"{root}-P{n}"
             source=base.model_copy(update={"id":sid,"page":n,"text":text[:100000],"stored_name":base.stored_name})
             source.status="unstructured_review" if text.strip() else "ocr_unavailable"
+            if text.strip() and not (page.extract_text() or "").strip():
+                source.kind = "ocr_document"
             sources.append(source)
             pages.append(text)
         base.text="\n".join(pages)[:100000]

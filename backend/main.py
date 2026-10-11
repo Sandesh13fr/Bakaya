@@ -20,7 +20,7 @@ import neatlogs
 from .engine import analyze
 from .exports import packet_zip
 from .fixtures import demo_case
-from .ingest import ingest_bytes, MAX_FILE_BYTES
+from .ingest import ingest_bytes, MAX_FILE_BYTES, ocr_available
 from .models import CaseInput, RunRequest, ReviewRequest, ApprovalRequest, SourceRef, AgentRequest
 from .providers import provider_available, extract_records
 
@@ -195,7 +195,7 @@ def create(case:CaseInput,is_demo=False):
 
 @app.get("/api/health")
 def health():
-    return {"status":"ok","service":"Bakaya","local_demo":not auth.production(),"model_extraction_configured":provider_available(),"ocr_configured":False,"external_submission":False}
+    return {"status":"ok","service":"Bakaya","local_demo":not auth.production(),"model_extraction_configured":provider_available(),"ocr_configured":ocr_available(),"external_submission":False}
 
 
 @app.get("/api/cases")

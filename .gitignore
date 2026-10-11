@@ -10,3 +10,6 @@ data/
 *.sqlite3
 artifacts/
 *.tsbuildinfo
+deploy/production.env
+deploy/data/
+deploy/backups/
