@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import ValidationError
 
-from . import storage, telemetry
+from . import storage, telemetry, enrichment
 import neatlogs
 from .engine import analyze
 from .exports import packet_zip
@@ -94,7 +94,17 @@ def view(state):
             "sources":case["sources"],"rates":case["rates"],"audit":state["audit"],"review":state["review"],"revision":state["revision"],"approval":state["approval"],"mode":state.get("mode","fixed"),"evaluation":state.get("evaluation"),"agent":state.get("agent"),**state["analysis"]}
     if state["approval"] and state["approval"]["revision"]==state["revision"]:
         result["status"]="approved"
+    result["buyer_context"] = enrichment.read(state["id"])
     return result
+
+
+@app.post("/api/cases/{case_id}/buyer-context")
+def buyer_context(case_id: str, body: dict):
+    require_case(case_id)
+    if not isinstance(body.get("domain"), str) or body.get("confirm") is not True:
+        raise HTTPException(422, "Confirm the optional domain lookup before continuing")
+    enrichment.lookup(case_id, body["domain"])
+    return view(require_case(case_id))
 
 
 def create(case:CaseInput,is_demo=False):
