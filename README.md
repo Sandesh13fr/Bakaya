@@ -40,7 +40,7 @@ flowchart LR
 | Agent | Live synthetic extraction/planning and separate injected local recovery passed. The 20-fixture comparison is a deliberately flawed baseline (14/20) against the corrected matcher (20/20), not production accuracy. |
 | Neatlogs | Actual application trace readback verifies one model/inventory step, not every historical run. |
 | Entire | Saved/pushed checkpoints and linked-file attribution verified. Git-assisted rollback passed in an isolated clone; native session resume did not restore code. |
-| cfo.ai | Editable pricing, delivery-cost, monthly revenue and conditional runway model created, read back and exported. Inputs are assumptions; unknown cash and fixed costs stay blank. [Model status](docs/market/cfo-integration.md). |
+| cfo.ai | Editable pricing, delivery-cost, monthly revenue and conditional runway model read back with zero formula errors. Owner-provided cash ₹30,000 and fixed costs ₹20,000/month give 1.5 months runway at zero assumed sales; illustrative stress demand gives 2.83 months. Read-only judge sharing enabled; public CSV fallback available. [Model status](docs/market/cfo-integration.md). |
 | Crustdata | Administrator-only consented, cached buyer enrichment; local 500-credit ceiling. Company data does not establish legal identity or eligibility. |
 | Authentication | Server-provisioned roles, tenant authorization, revocable sessions, CSRF and login throttling tested. No self-signup, MFA or email recovery. |
 | Deployment/backups | Authenticated synthetic Vercel/AWS deployment and HTTPS checks recorded. Encrypted daily backups active; one downloaded off-host archive restored. Automated off-host transfer remains pending. |
