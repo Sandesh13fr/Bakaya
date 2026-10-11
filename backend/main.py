@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import ValidationError
 
-from . import storage, telemetry, enrichment
+from . import storage, telemetry, enrichment, auth
 import neatlogs
 from .engine import analyze
 from .exports import packet_zip
@@ -32,6 +32,8 @@ except ImportError:
 
 @asynccontextmanager
 async def lifespan(app):
+    if auth.production() and not os.getenv("BAKAYA_PUBLIC_ORIGIN", "").startswith("https://"):
+        raise RuntimeError("Production requires BAKAYA_PUBLIC_ORIGIN with HTTPS")
     telemetry.initialize()
     try:
         yield
@@ -46,14 +48,73 @@ app.add_middleware(TrustedHostMiddleware, allowed_hosts=sorted(TRUSTED_HOSTS), w
 
 
 @app.middleware("http")
-async def local_origin_guard(request:Request, call_next):
-    origin=request.headers.get("origin")
-    if request.method in {"POST","PUT","PATCH","DELETE"} and origin:
-        parsed=urlparse(origin)
-        allowed={h.strip("[]") for h in TRUSTED_HOSTS}
-        if parsed.scheme not in {"http", "https"} or parsed.hostname not in allowed:
-            return Response("Cross-origin mutation rejected",status_code=403)
-    return await call_next(request)
+async def session_guard(request: Request, call_next):
+    identity = auth.session(request.cookies.get("bakaya_session"))
+    mutation = request.method in {"POST", "PUT", "PATCH", "DELETE"}
+    origin = request.headers.get("origin")
+    if auth.production() and request.url.path == "/api/auth/login" and mutation and origin != os.getenv("BAKAYA_PUBLIC_ORIGIN"):
+        return Response("Same-origin login required", status_code=403)
+    if mutation and origin:
+        expected = os.getenv("BAKAYA_PUBLIC_ORIGIN") if auth.production() else str(request.base_url).rstrip("/")
+        if origin.rstrip("/") != expected:
+            return Response("Cross-origin mutation rejected", status_code=403)
+    path = request.url.path
+    if path.startswith("/api/") and path not in {"/api/health", "/api/auth/login", "/api/auth/me"}:
+        if auth.production() and not identity:
+            return Response("Sign in required", status_code=401)
+        if identity and mutation and not __import__("hmac").compare_digest(request.headers.get("x-csrf-token", ""), identity["csrf_token"]):
+            return Response("CSRF token required", status_code=403)
+        if identity and mutation and identity["user"]["role"] == "viewer" and path != "/api/auth/logout":
+            return Response("Read-only account", status_code=403)
+    user_token = auth.USER.set(identity["user"] if identity else None)
+    tenant_token = storage.TENANT.set(identity["user"]["tenant_id"] if identity else "local-demo")
+    try:
+        if path == "/api/demo" and (auth.production() or (identity and identity["user"]["role"] == "viewer")):
+            return Response("Use the authenticated POST demo endpoint", status_code=405)
+        response = await call_next(request)
+        if path.startswith("/api/"):
+            response.headers["Cache-Control"] = "no-store"
+        return response
+    finally:
+        auth.USER.reset(user_token)
+        storage.TENANT.reset(tenant_token)
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+    if auth.production():
+        response.headers["Strict-Transport-Security"] = "max-age=31536000"
+    return response
+
+
+@app.get("/api/auth/me")
+def auth_me(request: Request):
+    identity = auth.session(request.cookies.get("bakaya_session"))
+    return {"authenticated": bool(identity), "local_demo": not auth.production() and not identity, **(identity or {})}
+
+
+@app.post("/api/auth/login")
+def auth_login(body: dict, response: Response, request: Request):
+    if not isinstance(body.get("email"), str) or not isinstance(body.get("password"), str):
+        raise HTTPException(422, "Email and password required")
+    token, identity = auth.login(body["email"], body["password"], request.client.host if request.client else "unknown")
+    response.set_cookie("bakaya_session", token, httponly=True, secure=auth.production(), samesite="strict", max_age=auth.SESSION_SECONDS, path="/")
+    response.headers["Cache-Control"] = "no-store"
+    return identity
+
+
+@app.post("/api/auth/logout")
+def auth_logout(request: Request, response: Response):
+    token = request.cookies.get("bakaya_session", "")
+    with auth.database() as conn:
+        conn.execute("DELETE FROM sessions WHERE digest=?", (hashlib.sha256(token.encode()).hexdigest(),))
+    response.delete_cookie("bakaya_session", path="/", secure=auth.production(), httponly=True, samesite="strict")
+    return {"authenticated": False, "local_demo": not auth.production()}
 
 
 def stamp():
@@ -134,7 +195,7 @@ def create(case:CaseInput,is_demo=False):
 
 @app.get("/api/health")
 def health():
-    return {"status":"ok","service":"Bakaya","local_demo":True,"model_extraction_configured":provider_available(),"ocr_configured":False,"external_submission":False}
+    return {"status":"ok","service":"Bakaya","local_demo":not auth.production(),"model_extraction_configured":provider_available(),"ocr_configured":False,"external_submission":False}
 
 
 @app.get("/api/cases")
@@ -269,6 +330,9 @@ def run(case_id:str,request:RunRequest=RunRequest()):
 @app.post("/api/cases/{case_id}/review")
 def review(case_id:str,request:ReviewRequest):
     state=require_case(case_id)
+    user=auth.require_role("reviewer", "admin")
+    if user:
+        request.reviewer=user["name"]
     case=CaseInput.model_validate(state["input"])
     sources={s.id:s for s in case.sources}
     for correction in request.invoice_updates:
@@ -328,6 +392,9 @@ def review(case_id:str,request:ReviewRequest):
 
 @app.post("/api/cases/{case_id}/approve")
 def approve(case_id:str,request:ApprovalRequest):
+    user=auth.require_role("reviewer", "admin")
+    if user:
+        request.reviewer=user["name"]
     state=require_case(case_id)
     run_analysis(state,state.get("mode","fixed"))
     if state["analysis"]["blockers"]:
