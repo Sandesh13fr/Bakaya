@@ -17,7 +17,7 @@ SESSION_SECONDS = 8 * 60 * 60
 
 
 def production():
-    return os.getenv("BAKAYA_ENV", "local") == "production"
+    return os.getenv("BAKAYA_ENV", "local") != "local"
 
 
 def database():
@@ -79,8 +79,14 @@ def login(email, password, ip="unknown"):
         conn.execute("DELETE FROM login_attempts WHERE email=?", (email,))
         conn.execute("DELETE FROM sessions WHERE expires<=?", (time.time(),))
         token, csrf = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
+        conn.execute("DELETE FROM sessions WHERE user_id=? AND digest NOT IN (SELECT digest FROM sessions WHERE user_id=? ORDER BY expires DESC LIMIT 4)",(row[0],row[0]))
         conn.execute("INSERT INTO sessions VALUES (?,?,?,?)", (hashlib.sha256(token.encode()).hexdigest(), row[0], csrf, time.time() + SESSION_SECONDS))
     return token, {"authenticated": True, "local_demo": False, "user": public_user(row), "csrf_token": csrf}
+
+
+def external_calls_allowed():
+    user=USER.get()
+    return not production() or bool(user and user["role"] == "admin")
 
 
 def require_role(*roles):

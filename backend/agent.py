@@ -173,7 +173,7 @@ async def execute_tool(state,tool,request):
             raise ValueError("Current human approval required before packet build")
         content=packet_zip(view(state),state)
         name="approved-packet-"+str(state["revision"])+".zip"
-        (storage.upload_dir(state["id"])/name).write_bytes(content)
+        # Export regenerates the approved packet; checkpoint metadata needs no duplicate file.
         flags["packet"]=True
         agent["packet"]={"filename":name,"bytes":len(content),"revision":state["revision"],"download_url":f"/api/cases/{state['id']}/export"}
         agent["status"]="complete"

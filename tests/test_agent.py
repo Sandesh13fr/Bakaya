@@ -65,7 +65,8 @@ def test_review_then_human_approval_then_packet_build(client):
     final=client.post(f"/api/cases/{case['id']}/agent/resume",json={}).json()
     assert final["agent"]["status"]=="complete"
     assert final["agent"]["packet"]["bytes"]>1000
-    assert (storage.upload_dir(case["id"])/final["agent"]["packet"]["filename"]).is_file()
+    assert not list(storage.upload_dir(case["id"]).glob("approved-packet-*.zip"))
+    assert client.get(final["agent"]["packet"]["download_url"]).status_code==200
 
 
 def test_agent_blocks_paid_extraction_when_not_opted_in(client,monkeypatch):

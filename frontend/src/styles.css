@@ -37,3 +37,7 @@
 .demo-login strong{font-size:15px}.demo-login p{margin:8px 0 16px}.sign-in-panel input{border:1px solid var(--border);border-radius:6px;padding:12px;background:#fff;color:#23382f}.sign-in-panel .field-label{max-width:none}
 @media(max-width:760px){.desktop-sidebar{display:none}.sign-in-panel h1{font-size:29px}.sign-in-page{padding:30px 20px}.topbar-right{gap:8px}.panel-heading{gap:14px}.ledger-tools{width:100%;flex-wrap:wrap}.ledger-tools .search-box{flex:1;min-width:160px}}
 @media(prefers-reduced-motion:reduce){.dialog-content[data-state=open]{animation:none}}
+
+.page-heading>div,.claim-toolbar>div,.linked-document>span,.file-title,.user-profile>div{min-width:0}.page-heading h1,.record-detail h2,.linked-document strong,.file-title strong,.user-profile strong{overflow-wrap:anywhere}.sign-in-panel input,.sign-in-panel textarea{font-size:16px}.sidebar-bottom .user-profile span{overflow-wrap:anywhere}
+
+.public-demo-notice{display:flex;align-items:flex-start;gap:10px;color:#3f594a;font-size:13px;padding:0 0 18px;line-height:1.6}

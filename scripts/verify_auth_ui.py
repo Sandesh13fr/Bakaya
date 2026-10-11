@@ -9,7 +9,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-os.environ.update(BAKAYA_ENV="production", BAKAYA_PUBLIC_ORIGIN="https://bakaya.test", BAKAYA_ALLOWED_HOSTS="bakaya.test", BAKAYA_ENABLE_LLM="false", NEATLOGS_API_KEY="", NEATLOGS_PROJECT_TOKEN="", CRUSTDATA_API_KEY="")
+os.environ.update(BAKAYA_ENV="production", BAKAYA_PUBLIC_ORIGIN="https://bakayaai-sandesh.vercel.app", BAKAYA_ALLOWED_HOSTS="bakayaai-sandesh.vercel.app", BAKAYA_ENABLE_LLM="false", NEATLOGS_API_KEY="", NEATLOGS_PROJECT_TOKEN="", CRUSTDATA_API_KEY="")
 
 from fastapi.testclient import TestClient
 from playwright.sync_api import sync_playwright
@@ -24,7 +24,7 @@ def main():
         storage.DATA_DIR = Path(directory)
         for email, tenant in (("reviewer@example.com", "a"), ("other@example.com", "b")):
             auth.provision(email, "QA reviewer", tenant, "reviewer", "test-only-password-123")
-        with TestClient(app, base_url="https://bakaya.test") as client, sync_playwright() as p:
+        with TestClient(app, base_url="https://bakayaai-sandesh.vercel.app") as client, sync_playwright() as p:
             browser = p.chromium.launch(channel="msedge", headless=True)
             page = browser.new_page(viewport={"width":1440,"height":1000}, reduced_motion="reduce")
             errors = []
@@ -38,14 +38,16 @@ def main():
                 headers = {k:v for k,v in response.headers.items() if k not in {"content-length","content-encoding","transfer-encoding"}}
                 route.fulfill(status=response.status_code, headers=headers, body=response.content)
 
-            page.route("https://bakaya.test/**", bridge)
-            page.goto("https://bakaya.test", wait_until="networkidle")
+            page.route("https://bakayaai-sandesh.vercel.app/**", bridge)
+            page.goto("https://bakayaai-sandesh.vercel.app", wait_until="networkidle")
             page.get_by_role("button", name="Sign in", exact=True).wait_for()
             for width in (1440,390):
                 page.set_viewport_size({"width":width,"height":1000})
                 assert not page.evaluate("document.documentElement.scrollWidth > innerWidth")
                 page.screenshot(path=str(output / f"sign-in-{width}.png"), full_page=True)
             page.set_viewport_size({"width":1440,"height":1000})
+            page.get_by_role("button", name="Use demo credentials", exact=True).click()
+            assert page.get_by_label("Email", exact=True).input_value() == "demo@bakaya.example"
             page.get_by_label("Email", exact=True).fill("reviewer@example.com")
             page.get_by_label("Password", exact=True).fill("wrong-password")
             page.get_by_role("button", name="Sign in", exact=True).click()

@@ -21,6 +21,15 @@ class SourceRef(BaseModel):
     page: int | None = None
     line: int | None = None
     text: str = ""
+
+    @field_validator("text")
+    @classmethod
+    def bounded_source_text(cls,value):
+        import os
+        if os.getenv("BAKAYA_ENV", "local") != "local" and len(value)>200000:
+            raise ValueError("Evidence source exceeds 200000 characters")
+        return value
+
     sha256: str = ""
     stored_name: str | None = None
     replacement_source_id: str | None = None
@@ -121,7 +130,7 @@ class CaseInput(BaseModel):
     deliveries: list[Delivery] = Field(default_factory=list)
     messages: list[Message] = Field(default_factory=list)
     rates: list[RatePeriod] = Field(default_factory=list, max_length=100)
-    sources: list[SourceRef] = Field(default_factory=list)
+    sources: list[SourceRef] = Field(default_factory=list,max_length=100)
     bank_total: Decimal | None = Field(default=None, ge=0)
 
     @model_validator(mode="after")

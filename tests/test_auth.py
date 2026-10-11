@@ -106,3 +106,80 @@ def test_database_context_closes_and_preserves_transactions(secure):
         rolled_back.execute('SELECT 1')
     with storage.connect() as fresh:
         assert fresh.execute("SELECT id FROM cases WHERE id IN ('committed','rolled-back')").fetchall()==[('committed',)]
+
+
+def test_paid_calls_admin_only_and_approval_identity(secure,monkeypatch):
+    from backend import providers, enrichment
+    monkeypatch.setenv('BAKAYA_ENABLE_LLM','true')
+    monkeypatch.setenv('LITELLM_API_KEY','test-non-secret')
+    login(secure,'a@example.com','a long password 123')
+    assert secure.get('/api/auth/me').json()['external_calls_allowed'] is False
+    case=secure.post('/api/cases/demo').json()
+    monkeypatch.setattr(enrichment,'lookup',lambda *args: pytest.fail('Paid lookup attempted'))
+    assert secure.post(f"/api/cases/{case['id']}/buyer-context",json={'domain':'stripe.com','confirm':True}).status_code==403
+    assert secure.post(f"/api/cases/{case['id']}/agent/run",json={'allow_model_planning':True}).status_code==403
+    token=auth.USER.set({'role':'reviewer'})
+    try:
+        assert not providers.provider_available()
+    finally:
+        auth.USER.reset(token)
+    token=auth.USER.set({'role':'admin'})
+    try:
+        assert providers.provider_available()
+    finally:
+        auth.USER.reset(token)
+
+
+def test_tenant_capacity_and_original_metadata(secure):
+    from backend.fixtures import demo_case
+    login(secure,'a@example.com','a long password 123')
+    payload=demo_case().model_dump(mode='json')
+    payload['sources'][0]['stored_name']='server-secret.sqlite3'
+    payload['sources'][0]['sha256']='forgedhash'
+    created=secure.post('/api/cases',json=payload)
+    assert created.status_code==200
+    assert created.json()['sources'][0]['stored_name'] is None
+    assert created.json()['sources'][0]['sha256']==''
+    for _ in range(9):
+        assert secure.post('/api/cases/demo').status_code==200
+    assert secure.post('/api/cases/demo').status_code==413
+    token=storage.TENANT.set('tenant-a')
+    try:
+        storage.reserve_upload_bytes(49*1024*1024)
+        with pytest.raises(storage.TenantCapacityExceeded):
+            storage.reserve_upload_bytes(2*1024*1024)
+    finally:
+        storage.TENANT.reset(token)
+
+
+def test_active_sessions_are_bounded(secure):
+    for _ in range(8):
+        login(secure,'a@example.com','a long password 123')
+    with auth.database() as conn:
+        assert conn.execute('SELECT count(*) FROM sessions').fetchone()[0]==5
+
+
+def test_environment_typo_fails_closed(secure,monkeypatch):
+    monkeypatch.setenv('BAKAYA_ENV','prodution')
+    assert secure.get('/api/cases').status_code==401
+    with pytest.raises(RuntimeError,match='BAKAYA_ENV'):
+        with TestClient(app,base_url='https://testserver'):
+            pass
+
+
+def test_source_text_and_audit_caps_fail_closed(secure):
+    from backend.models import SourceRef
+    from pydantic import ValidationError
+    with pytest.raises(ValidationError,match='200000'):
+        SourceRef(id='large',file='large.txt',kind='invoice',text='x'*200001)
+    token=storage.TENANT.set('tenant-a')
+    try:
+        with pytest.raises(storage.TenantCapacityExceeded):
+            storage.save_case({'id':'too-many-events','audit':[{}]*1001})
+        assert storage.get_case('too-many-events') is None
+    finally:
+        storage.TENANT.reset(token)
+    rejected=secure.get('/api/cases')
+    assert rejected.status_code==401
+    assert rejected.headers['cache-control']=='no-store'
+    assert rejected.headers['x-content-type-options']=='nosniff'

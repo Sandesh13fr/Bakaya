@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from fastapi import FastAPI, File, HTTPException, UploadFile, Request
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, Response, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import ValidationError
@@ -32,6 +32,8 @@ except ImportError:
 
 @asynccontextmanager
 async def lifespan(app):
+    if os.getenv("BAKAYA_ENV", "local") not in {"local","production"}:
+        raise RuntimeError("BAKAYA_ENV must be local or production")
     if auth.production() and not os.getenv("BAKAYA_PUBLIC_ORIGIN", "").startswith("https://"):
         raise RuntimeError("Production requires BAKAYA_PUBLIC_ORIGIN with HTTPS")
     telemetry.initialize()
@@ -83,6 +85,8 @@ async def session_guard(request: Request, call_next):
 @app.middleware("http")
 async def security_headers(request: Request, call_next):
     response = await call_next(request)
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "no-referrer"
     response.headers["X-Frame-Options"] = "DENY"
@@ -95,7 +99,7 @@ async def security_headers(request: Request, call_next):
 @app.get("/api/auth/me")
 def auth_me(request: Request):
     identity = auth.session(request.cookies.get("bakaya_session"))
-    return {"authenticated": bool(identity), "local_demo": not auth.production() and not identity, **(identity or {})}
+    return {"authenticated": bool(identity), "local_demo": not auth.production() and not identity, "external_calls_allowed":auth.external_calls_allowed(), **(identity or {})}
 
 
 @app.post("/api/auth/login")
@@ -115,6 +119,11 @@ def auth_logout(request: Request, response: Response):
         conn.execute("DELETE FROM sessions WHERE digest=?", (hashlib.sha256(token.encode()).hexdigest(),))
     response.delete_cookie("bakaya_session", path="/", secure=auth.production(), httponly=True, samesite="strict")
     return {"authenticated": False, "local_demo": not auth.production()}
+
+
+@app.exception_handler(storage.TenantCapacityExceeded)
+async def tenant_capacity_error(request: Request, exc):
+    return JSONResponse({"detail":str(exc)},status_code=413)
 
 
 def stamp():
@@ -164,11 +173,18 @@ def buyer_context(case_id: str, body: dict):
     require_case(case_id)
     if not isinstance(body.get("domain"), str) or body.get("confirm") is not True:
         raise HTTPException(422, "Confirm the optional domain lookup before continuing")
+    if not auth.external_calls_allowed():
+        raise HTTPException(403, "External provider calls require an administrator")
     enrichment.lookup(case_id, body["domain"])
     return view(require_case(case_id))
 
 
 def create(case:CaseInput,is_demo=False):
+    if not is_demo:
+        for source in case.sources:
+            # Original-byte metadata is assigned only by ingestion, never by clients.
+            source.stored_name=None
+            source.sha256=""
     sid="PROFILE-"+uuid.uuid4().hex[:8]
     # A manually entered party profile is a user statement, not external proof.
     if not case.supplier.source_refs or not case.buyer.source_refs:
@@ -180,7 +196,10 @@ def create(case:CaseInput,is_demo=False):
                 party.field_sources={k:[sid] for k,v in party.model_dump().items() if v not in (None,"") and k not in {"source_refs","field_sources"}}
     state={"id":uuid.uuid4().hex,"input":case.model_dump(mode="json"),"review":{"rate_confirmed":False,"buyer_confirmed":False},"audit":[],"revision":1,"approval":None,"demo":is_demo}
     audit(state,"created","Synthetic fictional demo" if is_demo else "Local case created; party profile is a user statement pending review.")
+    if auth.production() and len(storage.list_cases())>=10:
+        raise storage.TenantCapacityExceeded("Tenant case capacity reached (10); contact the operator")
     if is_demo:
+        storage.reserve_upload_bytes(sum(len(source.text.encode("utf-8")) for source in case.sources))
         for source in case.sources:
             content=source.text.encode("utf-8")
             stored_name=source.id+".txt"
@@ -264,6 +283,8 @@ def apply_linked_facts(case:CaseInput):
 @neatlogs.span(kind="WORKFLOW", name="invoice-document-extraction", capture_input=False, capture_output=False)
 async def upload(case_id:str,files:list[UploadFile]=File(...)):
     state=require_case(case_id)
+    if len(state["input"]["sources"])+len(files)>100:
+        raise HTTPException(413,"At most 100 evidence sources per case")
     if len(files)>30:
         raise HTTPException(400,"At most30 files per upload")
     payload=state["input"]
@@ -301,6 +322,7 @@ async def upload(case_id:str,files:list[UploadFile]=File(...)):
     except ValidationError as exc:
         raise HTTPException(422,str(exc)) from exc
     state["input"]=checked.model_dump(mode="json")
+    storage.reserve_upload_bytes(sum(len(data) for _,data in staged))
     for filename,data in staged:
         (storage.upload_dir(case_id)/Path(filename).name).write_bytes(data)
     invalidate(state)
@@ -400,7 +422,7 @@ def approve(case_id:str,request:ApprovalRequest):
     if state["analysis"]["blockers"]:
         raise HTTPException(409,{"message":"Resolve every blocking review item before approval","blockers":state["analysis"]["blockers"]})
     digest=hashlib.sha256(json.dumps(state["input"],sort_keys=True).encode()).hexdigest()
-    state["approval"]={"reviewer":request.reviewer,"at":stamp(),"revision":state["revision"],"input_sha256":digest,"scope":"local packet download only"}
+    state["approval"]={"user_id":user["id"] if user else None,"tenant_id":user["tenant_id"] if user else "local-demo","role":user["role"] if user else "local-demo","reviewer":request.reviewer,"at":stamp(),"revision":state["revision"],"input_sha256":digest,"scope":"local packet download only"}
     audit(state,"approved",f"{request.reviewer} approved revision{state['revision']} for local download; no filing or sending.")
     storage.save_case(state)
     return view(state)
@@ -452,6 +474,8 @@ async def agent_resume(case_id:str,request:AgentRequest=AgentRequest()):
 
 
 async def advance_agent(case_id,request,fresh):
+    if (request.allow_model_extraction or request.allow_model_planning) and not auth.external_calls_allowed():
+        raise HTTPException(403,"External provider calls require an administrator")
     from .agent import LOCKS,advance
     import asyncio
     lock=LOCKS.setdefault(case_id,asyncio.Lock())

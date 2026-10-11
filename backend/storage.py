@@ -38,14 +38,41 @@ class ConcurrentCaseUpdate(RuntimeError):
     pass
 
 
-def save_case(case: dict, expected_revision: int | None = None):
+class TenantCapacityExceeded(RuntimeError):
+    pass
+
+
+def reserve_upload_bytes(size):
+    # Reservations are retained on failed writes; operator review is required to reclaim capacity.
+    if os.getenv("BAKAYA_ENV") != "production":
+        return
     with connect() as conn:
+        conn.execute("CREATE TABLE IF NOT EXISTS upload_budget (tenant_id TEXT PRIMARY KEY, bytes INTEGER NOT NULL)")
+        conn.commit()
+        conn.execute("BEGIN IMMEDIATE")
+        row=conn.execute("SELECT bytes FROM upload_budget WHERE tenant_id=?",(TENANT.get(),)).fetchone()
+        if row:
+            used=row[0]
+        else:
+            ids=[item[0] for item in conn.execute("SELECT id FROM cases WHERE tenant_id=?",(TENANT.get(),))]
+            used=sum(file.stat().st_size for case_id in ids for file in (DATA_DIR/"uploads"/case_id).glob("*") if file.is_file())
+        if used+size>50*1024*1024:
+            raise TenantCapacityExceeded("Tenant upload capacity reached (50 MiB); contact the operator")
+        conn.execute("INSERT INTO upload_budget VALUES (?,?) ON CONFLICT(tenant_id) DO UPDATE SET bytes=excluded.bytes",(TENANT.get(),used+size))
+
+
+def save_case(case: dict, expected_revision: int | None = None):
+    if os.getenv("BAKAYA_ENV", "local") != "local" and len(case.get("audit",[]))>1000:
+        raise TenantCapacityExceeded("Case audit capacity reached (1000 events); contact the operator")
+    with connect() as conn:
+        conn.execute("BEGIN IMMEDIATE")
         if expected_revision is not None:
-            conn.execute("BEGIN IMMEDIATE")
             row=conn.execute("SELECT payload FROM cases WHERE id=? AND tenant_id=?",(case["id"],TENANT.get())).fetchone()
             if not row or json.loads(row[0])["revision"]!=expected_revision:
                 raise ConcurrentCaseUpdate("Case changed while agent was working; resume against latest reviewer decisions")
         existing=conn.execute("SELECT tenant_id FROM cases WHERE id=?",(case["id"],)).fetchone()
+        if not existing and os.getenv("BAKAYA_ENV") == "production" and conn.execute("SELECT count(*) FROM cases WHERE tenant_id=?",(TENANT.get(),)).fetchone()[0]>=10:
+            raise TenantCapacityExceeded("Tenant case capacity reached (10); contact the operator")
         if existing and existing[0]!=TENANT.get():
             raise PermissionError("Case belongs to another tenant")
         updated=conn.execute("INSERT INTO cases(id,payload,tenant_id) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload WHERE cases.tenant_id=excluded.tenant_id",(case["id"],json.dumps(case),TENANT.get()))

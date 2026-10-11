@@ -14,6 +14,7 @@ from decimal import Decimal, InvalidOperation
 import httpx
 import neatlogs
 from .telemetry import record_usage
+from .auth import external_calls_allowed
 
 from .models import Buyer, Delivery, Invoice, Message, Payment, PurchaseOrder, Supplier
 
@@ -34,7 +35,7 @@ SCHEMA = {
 
 
 def provider_available() -> bool:
-    return os.getenv("BAKAYA_ENABLE_LLM", "").lower() == "true" and bool(os.getenv("LITELLM_API_KEY") or os.getenv("OPENAI_API_KEY"))
+    return external_calls_allowed() and os.getenv("BAKAYA_ENABLE_LLM", "").lower() == "true" and bool(os.getenv("LITELLM_API_KEY") or os.getenv("OPENAI_API_KEY"))
 
 
 def _normalize(text: str) -> str:
